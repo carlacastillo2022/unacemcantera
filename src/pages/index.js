@@ -9,6 +9,12 @@ import CertificateMobile from "@pages/mobile/Certificate";
 import HomeDesktop from "@pages/desktop/Home";
 import QuestionaryDesktop from "@pages/desktop/Questionary";
 import CertificateDesktop from "@pages/desktop/Certificate";
+import Footer from "@components/Footer";
+
+const Container = styled.div`
+  flex-direction: column;
+  display: flex;
+`;
 
 const ContentDesktopView = styled.div`
   padding: 28px 16px 70px;
@@ -28,28 +34,40 @@ const ContentMobileView = styled.div`
 export const Home = () => {
   if (isMobile)
     return (
-      <ContentMobileView>
-        <HomeMobile />
-      </ContentMobileView>
+      <Container>
+        <ContentMobileView>
+          <HomeMobile />
+        </ContentMobileView>
+        <Footer />
+      </Container>
     );
   return (
-    <ContentDesktopView>
-      <HomeDesktop />
-    </ContentDesktopView>
+    <Container>
+      <ContentDesktopView>
+        <HomeDesktop />
+      </ContentDesktopView>
+      <Footer />
+    </Container>
   );
 };
 
 export const Questionary = () => {
   if (isMobile)
     return (
-      <ContentMobileView>
-        <QuestionaryMobile />
-      </ContentMobileView>
+      <Container>
+        <ContentMobileView>
+          <QuestionaryMobile />
+        </ContentMobileView>
+        <Footer />
+      </Container>
     );
   return (
-    <ContentDesktopView>
-      <QuestionaryDesktop />
-    </ContentDesktopView>
+    <Container>
+      <ContentDesktopView>
+        <QuestionaryDesktop />
+      </ContentDesktopView>
+      <Footer />
+    </Container>
   );
 };
 
@@ -64,13 +82,19 @@ export const Lessons = () => {
 export const Certificate = () => {
   if (isMobile)
     return (
-      <ContentMobileView>
-        <CertificateMobile />
-      </ContentMobileView>
+      <Container>
+        <ContentMobileView>
+          <CertificateMobile />
+        </ContentMobileView>
+        <Footer />
+      </Container>
     );
   return (
-    <ContentDesktopView>
-      <CertificateDesktop />
-    </ContentDesktopView>
+    <Container>
+      <ContentDesktopView>
+        <CertificateDesktop />
+      </ContentDesktopView>
+      <Footer />
+    </Container>
   );
 };
