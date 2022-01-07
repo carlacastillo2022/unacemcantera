@@ -15,6 +15,7 @@ const Container = styled.div`
   flex-direction: column;
   display: flex;
   align-items: center;
+  position: relative;
 `;
 
 const ContentDesktopView = styled.div`

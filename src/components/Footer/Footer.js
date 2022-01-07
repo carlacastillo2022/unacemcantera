@@ -8,6 +8,8 @@ const Container = styled.div`
   width: 100vw;
   align-items: center;
   padding: 12px 0px;
+  position: absolute;
+  bottom: 0;
 `;
 
 const StyledTitle = styled.h4`
@@ -21,7 +23,7 @@ const StyledTitle = styled.h4`
 const StyledDescription = styled.span`
   font-weight: 400;
   font-size: 9px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-family: ${({ theme }) => theme.fonts.mainFont};
   line-height: 16px;
 `;
@@ -30,7 +32,10 @@ const Footer = () => {
   return (
     <Container>
       <StyledTitle>© 2020 UNACEM</StyledTitle>
-      <StyledDescription><strong>Unión Andina de Cementos S.A.A </strong> Av. Atocongo 2440. Villa María del Triunfo.</StyledDescription>
+      <StyledDescription>
+        <strong>Unión Andina de Cementos S.A.A </strong> Av. Atocongo 2440.
+        Villa María del Triunfo.
+      </StyledDescription>
       <StyledDescription>Lima, Perú. T (511) 217 0200</StyledDescription>
     </Container>
   );
