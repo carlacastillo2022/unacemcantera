@@ -14,6 +14,7 @@ import Footer from "@components/Footer";
 const Container = styled.div`
   flex-direction: column;
   display: flex;
+  align-items: center;
 `;
 
 const ContentDesktopView = styled.div`
