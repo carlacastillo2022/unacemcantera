@@ -7,6 +7,7 @@ import {
 import Link from "@components/Link";
 import Button from "@components/Button";
 import Title from "@components/Title";
+import Animation from "@components/Animation";
 import ArrowDoubleLeft from "@assets/images/arrow-double-left.svg";
 import ArrowDoubleRight from "@assets/images/arrow-double-right.svg";
 import RadioNormal from "@assets/images/radio-normal.svg";
@@ -78,6 +79,8 @@ const Questionary = () => {
     useFetchResponseQuestionary();
   const [questionary, setQuestionary] = useState([]);
   const [showQuestions, setShowQuestions] = useState(false);
+  const [disabledButton, setDisabledButton] = useState(true);
+  const [currentVideo, setCurrentVideo] = useState(0);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -128,10 +131,17 @@ const Questionary = () => {
     copyResponses[index]["alternativas"] = responses_;
     setQuestionary(copyResponses);
     if (!isValidResponse) {
+      setDisabledButton(true);
       alert(
         "Respuesta incorrecta" +
           "\n No te preocupes. Puedes intertarlo una vez más"
       );
+    } else {
+      if (index === questionary.length - 1) {
+        setDisabledButton(false);
+      } else {
+        setCurrentVideo(index + 1);
+      }
     }
   };
 
@@ -141,7 +151,7 @@ const Questionary = () => {
   };
 
   return (
-    <div>
+    <>
       <Link
         onClick={() => {
           history.goBack();
@@ -181,31 +191,58 @@ const Questionary = () => {
             </>
           )}
           {showQuestions &&
-            questionary.map((item, index) => (
-              <CardQuestion>
-                <Title type="md">{`${
-                  index + 1 < 9 ? `0${index + 1}` : `${index + 1}`
-                }.- ${item?.pregunta}`}</Title>
-                {item.alternativas &&
-                  item.alternativas.map(
-                    (item_, index_) =>
-                      item_?.alternativa && (
-                        <Alternative
-                          onClick={() => onSelectedAlternative(index, index_)}
-                        >
-                          {item_?.respuesta ? (
-                            <img src={RadioSelected} />
-                          ) : (
-                            <img src={RadioNormal} />
-                          )}
-                          <Paragraph style={{ marginLeft: "4px" }}>
-                            {item_?.alternativa}
-                          </Paragraph>
-                        </Alternative>
-                      )
-                  )}
-              </CardQuestion>
-            ))}
+            questionary.map((item, index) =>
+              index === currentVideo ? (
+                <Animation typeAnimation="fade">
+                  <CardQuestion>
+                    <Title type="md">{`${
+                      currentVideo + 1 < 9
+                        ? `0${currentVideo + 1}`
+                        : `${currentVideo + 1}`
+                    }.- ${item?.pregunta}`}</Title>
+                    {item.alternativas &&
+                      item.alternativas.map(
+                        (item_, index_) =>
+                          item_?.alternativa && (
+                            <Alternative>
+                              {item_?.respuesta ? (
+                                <img
+                                  src={RadioSelected}
+                                  onClick={() =>
+                                    onSelectedAlternative(index, index_)
+                                  }
+                                />
+                              ) : (
+                                <img
+                                  src={RadioNormal}
+                                  onClick={() =>
+                                    onSelectedAlternative(index, index_)
+                                  }
+                                />
+                              )}
+                              <Paragraph style={{ marginLeft: "4px" }}>
+                                {item_?.alternativa}
+                              </Paragraph>
+                            </Alternative>
+                          )
+                      )}
+                  </CardQuestion>
+                </Animation>
+              ) : null
+            )}
+          {showQuestions && (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-end",
+              }}
+            >
+              <Title type="md">{`Pregunta: ${currentVideo + 1}/${
+                questionary.length
+              }`}</Title>
+            </div>
+          )}
           {showQuestions && (
             <div
               style={{
@@ -215,7 +252,10 @@ const Questionary = () => {
               }}
             >
               <Button
-                onClick={checkAnswers}
+                onClick={() => {
+                  if (!disabledButton) checkAnswers();
+                }}
+                disabled={disabledButton}
                 size="medium"
                 label="OBTENER CERTIFICADO"
                 iconLeft={LockedButton}
@@ -227,14 +267,14 @@ const Questionary = () => {
           <img
             style={{
               maxWidth: "300px",
-              maxHeight: "700px",
+              maxHeight: "600px",
               borderRadius: "8px",
             }}
             src={BackgroundQuestionary}
           />
         </ContentRight>
       </Content>
-    </div>
+    </>
   );
 };
 

@@ -21,16 +21,18 @@ const Container = styled.div`
 const ContentDesktopView = styled.div`
   padding: 28px 16px 70px;
   background: #ffffff;
-  height: 120%;
   margin: 0 5%;
   border-radius: 8px;
+  min-width: 960px;
   max-width: 1169px;
+  margin-bottom: 40px;
 `;
 
 const ContentMobileView = styled.div`
   padding: 28px 16px 70px;
   background: #ffffff;
   height: 100%;
+  margin-bottom: 40px;
 `;
 
 export const Home = () => {
@@ -60,7 +62,7 @@ export const Questionary = () => {
         <ContentMobileView>
           <QuestionaryMobile />
         </ContentMobileView>
-        <Footer />
+        <Footer style={{ position: 'fixed' }} />
       </Container>
     );
   return (
@@ -68,7 +70,7 @@ export const Questionary = () => {
       <ContentDesktopView>
         <QuestionaryDesktop />
       </ContentDesktopView>
-      <Footer />
+      <Footer style={{ position: 'fixed' }} />
     </Container>
   );
 };
@@ -88,7 +90,7 @@ export const Certificate = () => {
         <ContentMobileView>
           <CertificateMobile />
         </ContentMobileView>
-        <Footer />
+        <Footer style={{ position: 'fixed' }} />
       </Container>
     );
   return (
@@ -96,7 +98,7 @@ export const Certificate = () => {
       <ContentDesktopView>
         <CertificateDesktop />
       </ContentDesktopView>
-      <Footer />
+      <Footer style={{ position: 'fixed' }} />
     </Container>
   );
 };

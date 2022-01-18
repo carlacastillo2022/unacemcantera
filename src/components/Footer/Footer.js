@@ -28,9 +28,9 @@ const StyledDescription = styled.span`
   line-height: 16px;
 `;
 
-const Footer = () => {
+const Footer = ({ style }) => {
   return (
-    <Container>
+    <Container style={style}>
       <StyledTitle>© 2020 UNACEM</StyledTitle>
       <StyledDescription>
         <strong>Unión Andina de Cementos S.A.A </strong> Av. Atocongo 2440.

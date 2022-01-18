@@ -1,3 +1,2 @@
-import Video from './Video';
-import ThumbnailVideo from './ThumbnailVideo';
-export { Video, ThumbnailVideo };
+import Video from "./Video";
+export { Video };

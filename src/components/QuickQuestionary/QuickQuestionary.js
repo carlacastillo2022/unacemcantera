@@ -85,70 +85,66 @@ const QuickQuestionary = ({
   };
 
   return (
-    <div>
-      <Content>
-        <div style={{ margin: "16px 0px" }}>
-          <Title type="lg" style={{ color: "#E52820" }}>
-            {" "}
-            {`Lección ${
-              (videoSelected?.index + 1) || 1
-            }: Repasando lo aprendido.`}
-          </Title>
+    <Content>
+      <div style={{ margin: "16px 0px" }}>
+        <Title type="lg" style={{ color: "#E52820" }}>
+          {" "}
+          {`Lección ${videoSelected?.index + 1 || 1}: Repasando lo aprendido.`}
+        </Title>
+      </div>
+      <CardQuestion>
+        {responses.length > 0 &&
+          responses.map((item, index) => (
+            <div key={`r${index}`}>
+              <Title type="md">{`${
+                index + 1 < 9 ? `0${index + 1}` : `${index + 1}`
+              }.- ${item?.pregunta}`}</Title>
+              {item.alternativas &&
+                item.alternativas.map((item_, index_) => (
+                  <Alternative
+                    key={`a${index_}`}
+                    onClick={() => onSelectedAlternative(index, index_)}
+                  >
+                    {item_?.respuesta ? (
+                      <img src={RadioSelected} />
+                    ) : (
+                      <img src={RadioNormal} />
+                    )}
+                    <Paragraph style={{ marginLeft: "4px" }}>
+                      {item_?.alternativa}
+                    </Paragraph>
+                  </Alternative>
+                ))}
+            </div>
+          ))}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            margin: "24px 0px",
+          }}
+        >
+          <Button
+            onClick={onClickSendResponse}
+            size="medium"
+            label="Enviar respuesta"
+          />
         </div>
-        <CardQuestion>
-          {responses.length > 0 &&
-            responses.map((item, index) => (
-              <div key={`r${index}`}>
-                <Title type="md">{`${
-                  index + 1 < 9 ? `0${index + 1}` : `${index + 1}`
-                }.- ${item?.pregunta}`}</Title>
-                {item.alternativas &&
-                  item.alternativas.map((item_, index_) => (
-                    <Alternative
-                      key={`a${index_}`}
-                      onClick={() => onSelectedAlternative(index, index_)}
-                    >
-                      {item_?.respuesta ? (
-                        <img src={RadioSelected} />
-                      ) : (
-                        <img src={RadioNormal} />
-                      )}
-                      <Paragraph style={{ marginLeft: "4px" }}>
-                        {item_?.alternativa}
-                      </Paragraph>
-                    </Alternative>
-                  ))}
-              </div>
-            ))}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-              margin: "24px 0px",
-            }}
-          >
-            <Button
-              onClick={onClickSendResponse}
-              size="medium"
-              label="Enviar respuesta"
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "flex-end",
-            }}
-          >
-            <Link onClick={onFinished}>
-              <span>Continuar siguiente lección</span>
-              <img src={ArrowDoubleRight} />
-            </Link>
-          </div>
-        </CardQuestion>
-      </Content>
-    </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "flex-end",
+          }}
+        >
+          <Link onClick={onFinished}>
+            <span>Continuar siguiente lección</span>
+            <img src={ArrowDoubleRight} />
+          </Link>
+        </div>
+      </CardQuestion>
+    </Content>
   );
 };
 

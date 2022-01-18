@@ -76,7 +76,7 @@ const Certificate = () => {
   };
 
   return (
-    <div>
+    <>
       <Link
         onClick={() => {
           history.goBack();
@@ -135,7 +135,7 @@ const Certificate = () => {
           disabled={isDisabledButton}
         />
       </div>
-    </div>
+    </>
   );
 };
 

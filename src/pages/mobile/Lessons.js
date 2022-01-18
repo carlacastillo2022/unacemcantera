@@ -6,13 +6,11 @@ import {
   useFetchTracking,
   useFetchQuestions,
 } from "@hooks/useCourses";
-import { sumDurations } from "@commons/utils";
-import { Video, ThumbnailVideo } from "@components/Video";
+import { Video } from "@components/Video";
 import Link from "@components/Link";
 import Button from "@components/Button";
 import Title from "@components/Title";
 import Steps from "@components/Steps";
-import Loading from "@components/Loading";
 import ArrowDoubleLeft from "@assets/images/arrow-double-left.svg";
 import ArrowDoubleLeftDark from "@assets/images/arrow-double-left-dark.svg";
 import LockedButton from "@assets/images/locked-button.svg";
@@ -25,22 +23,12 @@ const Paragraph = styled.p`
   font-family: ${({ theme }) => theme.fonts.mainFont};
 `;
 
-const ContainerLoading = styled.div`
-  width: 100%;
-  height: 200px;
-  background: black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
 let timeOutFetch = 2;
 let isPlay = false;
 let isEnd = false;
 
 const Lesson = () => {
   const videoContainer = useRef(null);
-  const videoRef = useRef(null);
 
   const location = useLocation();
   const history = useHistory();
@@ -49,8 +37,10 @@ const Lesson = () => {
   const [lessons, setLessons] = useState([]);
   const [videoSelected, setVideoSelected] = useState({ item: null, index: -1 });
   const [questionary, setQuestionary] = useState([]);
-  const [duration, setDuration] = useState();
-  const [seconds, setSeconds] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [showButtonsFooter, setShowButtonsFooter] = useState(false);
+  const [seek, setSeek] = useState(0);
+
   const token = location?.state?.token;
   const idCurso = location?.state?.idCurso;
   const nombreCurso = location?.state?.nombreCurso;
@@ -58,6 +48,10 @@ const Lesson = () => {
   const { fetch: fetchVideoByCourse, data: dataLessons } = useFetchLessons();
   const { fetch: fetchTracking, data: dataTracking } = useFetchTracking();
   const { fetch: fetchQuestions, data: dataQuestions } = useFetchQuestions();
+
+  useEffect(() => {
+    setSeek(videoSelected?.item?.ultimoMinutoVisto || 0);
+  }, [videoSelected]);
 
   useEffect(() => {
     fetchVideoByCourse(token, idCurso);
@@ -90,30 +84,44 @@ const Lesson = () => {
   useEffect(() => {
     if (dataLessons?.success) {
       const data = dataLessons?.data;
-      let find = null;
-      if (data.length > 0) {
-        if (videoSelected?.item) {
-          if (videoSelected?.index + 1 < data?.length) {
+      setLessons(data);
+      if (data.length - 1 > videoSelected.index) {
+        let find = null;
+        if (data.length > 0) {
+          if (videoSelected?.item) {
+            if (videoSelected?.index + 1 < data?.length) {
+              find = {
+                index: videoSelected?.index + 1,
+                item: data[videoSelected?.index + 1],
+              };
+            }
+          } else {
             find = {
-              index: videoSelected?.index + 1,
-              item: data[videoSelected?.index + 1],
+              index: 0,
+              item: data[0],
             };
           }
-        } else {
-          find = {
-            index: 0,
-            item: data[0],
-          };
         }
+        setDisabledButton(
+          data?.find((item) => item.completoVista !== "SI") ? true : false
+        );
+
+        setSeek(0);
+        setVideoSelected(find);
+        isPlay = true;
+        setPlaying(true);
+      } else {
+        isPlay = false;
+        const find = {
+          index: data.length - 1,
+          item: data[data.length - 1],
+        };
+        setDisabledButton(
+          data?.find((item) => item.completoVista !== "SI") ? true : false
+        );
+        setVideoSelected(find);
+        setPlaying(false);
       }
-      setDisabledButton(
-        data?.find((item) => item.completoVista !== "SI") ? true : false
-      );
-      setLessons(data);
-      const sumDurations_ = sumDurations(dataLessons?.data);
-      setDuration(sumDurations_.formatted);
-      setSeconds(sumDurations_.seconds);
-      setVideoSelected(find);
     }
   }, [dataLessons]);
 
@@ -150,12 +158,13 @@ const Lesson = () => {
 
   const handleOnPlay = () => {
     isEnd = false;
-    isPlay = true;
+    isPlay = !playing;
     timeOutFetch = 2;
+    setPlaying(!playing);
   };
 
-  const handleOnEnded = () => {
-    const currentTime = videoRef?.current.getDuration();
+  const handleOnEnded = (currentTime) => {
+    console.log("olayyyyy", isPlay);
     if (isPlay) {
       isPlay = false;
       isEnd = true;
@@ -167,6 +176,24 @@ const Lesson = () => {
         true
       );
     }
+  };
+
+  const handleOnInitTimer = () => {
+    setPlaying(false);
+    setShowButtonsFooter(true);
+  };
+
+  const onClickNextVideo = (currentTime) => {
+    isPlay = false;
+    isEnd = true;
+    setPlaying(false);
+    fetchTracking(
+      token,
+      videoSelected?.item?.idCurso,
+      videoSelected?.item?.idVideo,
+      currentTime,
+      true
+    );
   };
 
   return (
@@ -181,32 +208,33 @@ const Lesson = () => {
       </Link>
 
       <div style={{ margin: "16px 0px" }}>
-        {!isLoading ? (
-          questionary?.length === 0 && videoSelected?.item ? (
-            <Video
-              innerRef={videoRef}
-              width="100%"
-              height="30%"
-              controls
-              seek={videoSelected?.item?.ultimoMinutoVisto}
-              src={`https://${videoSelected?.item?.rutaPublica}`}
-              onProgress={handleOnProgress}
-              onPlay={handleOnPlay}
-              onEnded={handleOnEnded}
-            />
-          ) : questionary?.length > 0 ? (
-            <QuickQuestionary
-              questionary={questionary}
-              videoSelected={videoSelected}
-              token={token}
-              onFinished={onFinished}
-            />
-          ) : null
-        ) : (
-          <ContainerLoading>
-            <Loading />
-          </ContainerLoading>
-        )}
+        {questionary?.length === 0 && videoSelected?.item ? (
+          <Video
+            width="100%"
+            height="30%"
+            playing={playing}
+            setPlaying={setPlaying}
+            seek={seek}
+            src={`https://${videoSelected?.item?.rutaPublica}`}
+            onProgress={handleOnProgress}
+            onPlay={handleOnPlay}
+            onEnded={handleOnEnded}
+            onInitTimer={handleOnInitTimer}
+            onClickNextVideo={onClickNextVideo}
+            isLoadingVideo={isLoading}
+            showButtonsFooter={showButtonsFooter}
+            delayToFinalizeVideo={10}
+            title={videoSelected?.item?.nombreVideo || ""}
+            hasInteractivity={videoSelected?.index === 13}
+          />
+        ) : questionary?.length > 0 ? (
+          <QuickQuestionary
+            questionary={questionary}
+            videoSelected={videoSelected}
+            token={token}
+            onFinished={onFinished}
+          />
+        ) : null}
       </div>
       {videoSelected?.item && (
         <Title type="lg">
@@ -221,13 +249,12 @@ const Lesson = () => {
           lessons={lessons}
           videoSelected={videoSelected}
           onCallbackVideoSelected={(item, index) => {
-            
-              videoContainer.current.scrollIntoView({ behavior: "smooth" });
-              setVideoSelected({
-                item,
-                index,
-              });
-        
+            videoContainer.current.scrollIntoView({ behavior: "smooth" });
+            setVideoSelected({
+              item,
+              index,
+            });
+            setPlaying(true);
           }}
         />
       </>

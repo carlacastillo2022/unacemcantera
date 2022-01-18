@@ -32,8 +32,8 @@ const Home = () => {
   const [token, setToken] = useQueryParam("token", StringParam);
   const [idCurso, setIdCurso] = useQueryParam("idCurso", StringParam);
 
-  const videoRef = useRef(null);
   const [lessons, setLessons] = useState([]);
+  const [playing, setPlaying] = useState(false);
   const [videoSelected, setVideoSelected] = useState({ item: null, index: -1 });
   const [duration, setDuration] = useState();
   const { fetch: fetchVideoByCourse, data: dataLessons } = useFetchLessons();
@@ -69,7 +69,7 @@ const Home = () => {
   }, [dataLessons]);
 
   return (
-    <div>
+    <>
       <Link
         onClick={() => {
           window.parent.location.href =
@@ -83,11 +83,12 @@ const Home = () => {
         <div style={{ margin: "16px 0px" }}>
           {dataInfoCourse?.data?.length ? (
             <Video
-              innerRef={videoRef}
               width="100%"
               height="30%"
-              controls
               src={`https://${dataInfoCourse?.data[0].thumbnailRutaPublica}`}
+              title={dataInfoCourse?.data[0].nombreCurso || ""}
+              playing={playing}
+              setPlaying={setPlaying}
             />
           ) : null}
         </div>
@@ -126,7 +127,9 @@ const Home = () => {
             />
           </ContainerCards>
           <Paragraph>
-            {dataInfoCourse?.data?.length ? dataInfoCourse?.data[0].descripcionCurso : ""}
+            {dataInfoCourse?.data?.length
+              ? dataInfoCourse?.data[0].descripcionCurso
+              : ""}
           </Paragraph>
         </>
         <Link
@@ -140,7 +143,7 @@ const Home = () => {
           <span>Ver todos los cursos</span>
         </Link>
       </>
-    </div>
+    </>
   );
 };
 

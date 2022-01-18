@@ -17,7 +17,6 @@ import Steps from "@components/Steps";
 import { Video } from "@components/Video";
 import ArrowDoubleLeft from "@assets/images/arrow-double-left.svg";
 import ArrowDoubleLeftDark from "@assets/images/arrow-double-left-dark.svg";
-import ArrowDoubleRight from "@assets/images/arrow-double-right.svg";
 import LockedButton from "@assets/images/locked-button.svg";
 import Time from "@assets/images/time.svg";
 import Lessons from "@assets/images/lessons.svg";
@@ -39,6 +38,7 @@ const Paragraph = styled.p`
 const Content = styled.div`
   display: flex;
   flex-direction: row;
+  margin-bottom: 30px;
 `;
 
 const ContentLeft = styled.div`
@@ -52,7 +52,7 @@ const ContentRight = styled.div`
   margin: 0px 15px;
   padding: 16px;
   overflow: scroll;
-  height: 120vh;
+  height: 100vh;
   ::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 7px;
@@ -63,15 +63,6 @@ const ContentRight = styled.div`
     background-color: rgba(0, 0, 0, 0.5);
     box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
   }
-`;
-
-const ContainerLoading = styled.div`
-  width: 100%;
-  height: 200px;
-  background: black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 `;
 
 let timeOutFetch = 2;
@@ -86,15 +77,23 @@ const Home = () => {
   const [disabledButton, setDisabledButton] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isSelectedVideo, setIsSelectedVideo] = useState(false);
+  const [playing, setPlaying] = useState(false);
   const videoRef = useRef(null);
   const [lessons, setLessons] = useState([]);
   const [videoSelected, setVideoSelected] = useState({ item: null, index: -1 });
   const [duration, setDuration] = useState();
   const [questionary, setQuestionary] = useState([]);
+  const [showButtonsFooter, setShowButtonsFooter] = useState(false);
+  const [seek, setSeek] = useState(0);
+
   const { fetch: fetchVideoByCourse, data: dataLessons } = useFetchLessons();
   const { fetch: fetchTracking, data: dataTracking } = useFetchTracking();
   const { fetch: fetchQuestions, data: dataQuestions } = useFetchQuestions();
   const { fetch: fetchCourse, data: dataInfoCourse } = useFetchCourse();
+
+  useEffect(() => {
+    setSeek(videoSelected?.item?.ultimoMinutoVisto || 0);
+  }, [videoSelected]);
 
   useEffect(() => {
     fetchCourse(token, idCurso);
@@ -110,7 +109,6 @@ const Home = () => {
         videoSelected?.item?.idCurso,
         videoSelected?.item?.idVideo
       );
-      //fetchVideoByCourse(token, idCurso);
     }
   }, [dataTracking]);
 
@@ -128,29 +126,47 @@ const Home = () => {
   useEffect(() => {
     if (dataLessons && dataLessons?.success) {
       const data = dataLessons?.data;
-      let find = null;
-      if (data.length > 0) {
-        if (videoSelected?.item) {
-          if (videoSelected?.index + 1 < data?.length) {
+      setLessons(data);
+      if (data.length - 1 > videoSelected.index) {
+        let find = null;
+        if (data.length > 0) {
+          if (videoSelected?.item) {
+            if (videoSelected?.index + 1 < data?.length) {
+              find = {
+                index: videoSelected?.index + 1,
+                item: data[videoSelected?.index + 1],
+              };
+            }
+          } else {
             find = {
-              index: videoSelected?.index + 1,
-              item: data[videoSelected?.index + 1],
+              index: 0,
+              item: data[0],
             };
           }
-        } else {
-          find = {
-            index: 0,
-            item: data[0],
-          };
         }
+        setDisabledButton(
+          data?.find((item) => item.completoVista !== "SI") ? true : false
+        );
+        const sumDurations_ = sumDurations(dataLessons?.data);
+        setDuration(sumDurations_.formatted);
+        if (videoSelected.index !== -1) {
+          setSeek(0);
+          setVideoSelected(find);
+          isPlay = true;
+          setPlaying(true);
+        }
+      } else {
+        isPlay = false;
+        const find = {
+          index: data.length - 1,
+          item: data[data.length - 1],
+        };
+        setDisabledButton(
+          data?.find((item) => item.completoVista !== "SI") ? true : false
+        );
+        setVideoSelected(find);
+        setPlaying(false);
       }
-      setDisabledButton(
-        data?.find((item) => item.completoVista !== "SI") ? true : false
-      );
-      setLessons(data);
-      const sumDurations_ = sumDurations(dataLessons?.data);
-      setDuration(sumDurations_.formatted);
-      setVideoSelected(find);
     }
   }, [dataLessons]);
 
@@ -171,12 +187,12 @@ const Home = () => {
 
   const handleOnPlay = () => {
     isEnd = false;
-    isPlay = true;
+    isPlay = !playing;
     timeOutFetch = 2;
+    setPlaying(!playing);
   };
 
-  const handleOnEnded = () => {
-    const currentTime = videoRef?.current.getDuration();
+  const handleOnEnded = (currentTime) => {
     if (isPlay && isSelectedVideo) {
       isPlay = false;
       isEnd = true;
@@ -190,20 +206,34 @@ const Home = () => {
     }
   };
 
+  const handleOnEndedVideoInteractive = () => {
+    setShowButtonsFooter(true);
+  };
+
+  const onClickNextVideo = (currentTime) => {
+    isPlay = false;
+    isEnd = true;
+    setPlaying(false);
+    fetchTracking(
+      token,
+      videoSelected?.item?.idCurso,
+      videoSelected?.item?.idVideo,
+      currentTime,
+      true
+    );
+  };
+
   const onFinished = () => {
     setQuestionary([]);
     fetchVideoByCourse(token, videoSelected?.item?.idCurso);
   };
 
+  const handleOnInitTimer = () => {
+    setPlaying(false);
+    setShowButtonsFooter(true);
+  };
+
   const onClickQuestionary = () => {
-    /*history.push({
-      pathname: "/certificate",
-      state: {
-        token,
-        idCurso: videoSelected?.item?.idCurso,
-        nombreCurso: videoSelected?.item?.nombreCurso,
-      },
-    });*/
     history.push({
       pathname: "/questionary",
       state: {
@@ -214,8 +244,42 @@ const Home = () => {
     });
   };
 
+  const onClickFirst = () => {
+    const find = {
+      index: videoSelected?.index + 1,
+      item: lessons[videoSelected?.index + 1],
+    };
+
+    setDisabledButton(
+      lessons?.find((item) => item.completoVista !== "SI") ? true : false
+    );
+    if (videoSelected.index !== -1) {
+      setSeek(0);
+      setVideoSelected(find);
+      isPlay = true;
+      setPlaying(true);
+    }
+  };
+
+  const onClickSecond = () => {
+    const find = {
+      index: videoSelected?.index + 2,
+      item: lessons[videoSelected?.index + 2],
+    };
+
+    setDisabledButton(
+      lessons?.find((item) => item.completoVista !== "SI") ? true : false
+    );
+    if (videoSelected.index !== -1) {
+      setSeek(0);
+      setVideoSelected(find);
+      isPlay = true;
+      setPlaying(true);
+    }
+  };
+
   return (
-    <div>
+    <>
       <Link
         onClick={() => {
           window.parent.location.href =
@@ -228,40 +292,45 @@ const Home = () => {
       <Content>
         <ContentLeft>
           <div style={{ margin: "16px 0px" }}>
-            {!isLoading ? (
-              questionary?.length === 0 ? (
+            {questionary?.length === 0 ? (
+              <>
                 <Video
                   innerRef={videoRef}
                   width="100%"
-                  height="30%"
-                  controls
+                  height="100%"
+                  playing={playing}
+                  setPlaying={setPlaying}
                   src={
                     !isSelectedVideo
                       ? dataInfoCourse?.data?.length &&
                         `https://${dataInfoCourse?.data[0].thumbnailRutaPublica}`
                       : `https://${videoSelected?.item?.rutaPublica}`
                   }
-                  seek={
-                    !isSelectedVideo
-                      ? 0
-                      : videoSelected?.item?.ultimoMinutoVisto
-                  }
+                  seek={seek}
                   onProgress={handleOnProgress}
                   onPlay={handleOnPlay}
                   onEnded={handleOnEnded}
+                  onEndedVideoInteractive={handleOnEndedVideoInteractive}
+                  onClickFirst={onClickFirst}
+                  onClickSecond={onClickSecond}
+                  onInitTimer={handleOnInitTimer}
+                  onClickNextVideo={onClickNextVideo}
+                  isLoadingVideo={isLoading}
+                  showButtonsFooter={
+                    !isSelectedVideo ? false : showButtonsFooter
+                  }
+                  delayToFinalizeVideo={!isSelectedVideo ? 0 : 10}
+                  title={videoSelected?.item?.nombreVideo || ""}
+                  hasInteractivity={videoSelected?.index === 13}
                 />
-              ) : (
-                <QuickQuestionary
-                  questionary={questionary}
-                  videoSelected={videoSelected}
-                  token={token}
-                  onFinished={onFinished}
-                />
-              )
+              </>
             ) : (
-              <ContainerLoading>
-                <Loading />
-              </ContainerLoading>
+              <QuickQuestionary
+                questionary={questionary}
+                videoSelected={videoSelected}
+                token={token}
+                onFinished={onFinished}
+              />
             )}
           </div>
           <Title type="lg">
@@ -316,12 +385,14 @@ const Home = () => {
             disabledClose
             videoSelected={videoSelected}
             onCallbackVideoSelected={(item, index) => {
-              
-                setIsSelectedVideo(true);
-                setVideoSelected({
-                  item,
-                  index,
-                });
+              isPlay = true;
+              setSeek(0);
+              setIsSelectedVideo(true);
+              setVideoSelected({
+                item,
+                index,
+              });
+              setPlaying(true);
             }}
           />
           <Button
@@ -346,7 +417,7 @@ const Home = () => {
           </Link>
         </ContentRight>
       </Content>
-    </div>
+    </>
   );
 };
 

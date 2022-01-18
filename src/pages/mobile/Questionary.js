@@ -48,6 +48,7 @@ const Questionary = () => {
     useFetchResponseQuestionary();
   const [questionary, setQuestionary] = useState([]);
   const [showQuestions, setShowQuestions] = useState(false);
+  const [disabledButton, setDisabledButton] = useState(true);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -87,7 +88,7 @@ const Questionary = () => {
     let isValidResponse = true;
     const responses_ = questionary[index].alternativas.map((element, i) => {
       if (i === index_) {
-        isValidResponse = element.esRespuestaCorrecta;
+        isValidResponse = element.esRespuestaCorrecta === "true";
         element["respuesta"] = true;
       } else {
         element["respuesta"] = false;
@@ -103,6 +104,16 @@ const Questionary = () => {
           "\n No te preocupes. Puedes intertarlo una vez más"
       );
     }
+    const listBoolean = copyResponses.map((item) => {
+      const newItem = item.alternativas.find(
+        (item) =>
+          item?.esRespuestaCorrecta === "true" && item?.respuesta === true
+      );
+      return !newItem ? false : true;
+    });
+    console.log("listBoolean", listBoolean);
+    const validResponse = listBoolean.includes(false);
+    setDisabledButton(validResponse);
   };
 
   const checkAnswers = () => {
@@ -111,7 +122,7 @@ const Questionary = () => {
   };
 
   return (
-    <div>
+    <>
       <Link
         onClick={() => {
           history.goBack();
@@ -158,14 +169,17 @@ const Questionary = () => {
               item.alternativas.map(
                 (item_, index_) =>
                   item_?.alternativa && (
-                    <Alternative
-                      key={`a${index_}`}
-                      onClick={() => onSelectedAlternative(index, index_)}
-                    >
+                    <Alternative key={`a${index_}`}>
                       {item_?.respuesta ? (
-                        <img src={RadioSelected} />
+                        <img
+                          src={RadioSelected}
+                          onClick={() => onSelectedAlternative(index, index_)}
+                        />
                       ) : (
-                        <img src={RadioNormal} />
+                        <img
+                          src={RadioNormal}
+                          onClick={() => onSelectedAlternative(index, index_)}
+                        />
                       )}
                       <Paragraph style={{ marginLeft: "4px" }}>
                         {item_?.alternativa}
@@ -187,10 +201,11 @@ const Questionary = () => {
             onClick={checkAnswers}
             label="OBTENER CERTIFICADO"
             iconLeft={LockedButton}
+            disabled={disabledButton}
           />
         </div>
       )}
-    </div>
+    </>
   );
 };
 

@@ -13,6 +13,7 @@ const composedTheme = {
           iconWidth: '20px',
         },
         small: {
+          padding: '4px 20px',
         },
         medium: {
           width: '60%',

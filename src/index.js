@@ -17,7 +17,7 @@ const ContainerLoading = styled.div`
 const AppLoadable = loadable(() => import("./App"), {
   fallback: (
     <ContainerLoading>
-      <Loading />
+      <Loading color="#E52820" />
     </ContainerLoading>
   ),
 });

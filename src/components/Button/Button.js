@@ -61,13 +61,15 @@ const StyledBody = styled.div`
 function SimpleButton({
   elementId,
   onClick,
-  className,
   disabled,
   type,
   label,
   color,
   iconLeft,
   iconRight,
+  styleIconLeft,
+  styleIconRight,
+  styleButton,
   size,
   active,
 }) {
@@ -75,7 +77,6 @@ function SimpleButton({
     onClick,
     disabled,
     type,
-    className,
     id: elementId,
     color,
     size,
@@ -83,11 +84,21 @@ function SimpleButton({
   };
 
   return (
-    <StyledButton {...props}>
+    <StyledButton {...props} style={styleButton}>
       <StyledBody>
-        {<img src={iconLeft} style={{ marginRight: '18px' }} />}
-        <span>{label}</span>
-        {<img src={iconRight} style={{ marginLeft: '18px' }} />}
+        {iconLeft && (
+          <img
+            src={iconLeft}
+            style={{ ...styleIconLeft, marginRight: label ? "18px" : "0px" }}
+          />
+        )}
+        {label && <span>{label}</span>}
+        {iconRight && (
+          <img
+            src={iconRight}
+            style={{ ...styleIconRight, marginLeft: label ? "18px" : "0px" }}
+          />
+        )}
       </StyledBody>
     </StyledButton>
   );
@@ -95,8 +106,9 @@ function SimpleButton({
 
 SimpleButton.propTypes = {
   elementId: PropTypes.string,
-  label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
-  className: PropTypes.string,
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  styleIconLeft: PropTypes.object,
+  styleIconRight: PropTypes.object,
   disabled: PropTypes.bool,
   type: PropTypes.string,
   onClick: PropTypes.func,
@@ -105,6 +117,7 @@ SimpleButton.propTypes = {
   iconLeft: PropTypes.node,
   iconRight: PropTypes.node,
   active: PropTypes.bool,
+  styleButton: PropTypes.object,
 };
 
 SimpleButton.defaultProps = {

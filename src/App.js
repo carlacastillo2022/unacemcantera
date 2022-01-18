@@ -1,6 +1,7 @@
 import React from "react";
 import { Home, Lessons, Questionary, Certificate } from "@pages";
 import { ThemeProvider } from "styled-components";
+import { IconContext } from "react-icons";
 import { QueryParamProvider } from "use-query-params";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import theme from "./theme";
@@ -10,25 +11,32 @@ const App = () => {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <AppStyles />
-        <Router>
-          <QueryParamProvider ReactRouterRoute={Route}>
-            <Switch>
-              <Route exact path="/" render={() => <Home />}></Route>
-              <Route exact path="/lessons" render={() => <Lessons />}></Route>
-              <Route
-                exact
-                path="/questionary"
-                render={() => <Questionary />}
-              ></Route>
-              <Route
-                exact
-                path="/certificate"
-                render={() => <Certificate />}
-              ></Route>
-            </Switch>
-          </QueryParamProvider>
-        </Router>
+        <IconContext.Provider
+          value={{
+            className: "react-icons",
+            size: 30,
+          }}
+        >
+          <AppStyles />
+          <Router>
+            <QueryParamProvider ReactRouterRoute={Route}>
+              <Switch>
+                <Route exact path="/" render={() => <Home />}></Route>
+                <Route exact path="/lessons" render={() => <Lessons />}></Route>
+                <Route
+                  exact
+                  path="/questionary"
+                  render={() => <Questionary />}
+                ></Route>
+                <Route
+                  exact
+                  path="/certificate"
+                  render={() => <Certificate />}
+                ></Route>
+              </Switch>
+            </QueryParamProvider>
+          </Router>
+        </IconContext.Provider>
       </ThemeProvider>
     </>
   );

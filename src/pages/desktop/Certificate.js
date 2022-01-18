@@ -92,7 +92,7 @@ const Certificate = () => {
   };
 
   return (
-    <div>
+    <>
       <Link
         onClick={() => {
           history.goBack();
@@ -162,7 +162,7 @@ const Certificate = () => {
           />
         </ContentRight>
       </Content>
-    </div>
+    </>
   );
 };
 
