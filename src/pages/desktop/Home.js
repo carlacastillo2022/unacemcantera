@@ -238,7 +238,7 @@ const Home = () => {
       pathname: "/questionary",
       state: {
         token,
-        idCurso: videoSelected?.item?.idCurso,
+        idCurso: dataInfoCourse?.data[0].idCurso,
         nombreCurso: videoSelected?.item?.nombreCurso,
       },
     });
