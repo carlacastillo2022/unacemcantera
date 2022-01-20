@@ -130,6 +130,7 @@ const Video = ({
   });
 
   useEffect(() => {
+    console.log("SEEK CAMBIADO", seek)
     if (playerRef && playerRef.current) {
       playerRef.current.seekTo(seek);
     }
