@@ -130,14 +130,6 @@ const Video = ({
   });
 
   useEffect(() => {
-    try {
-    if (playerRef && playerRef.current) {
-      playerRef.current.seekTo(seek || 0);
-    }
-  } catch (e) {}
-  }, [src]);
-
-  useEffect(() => {
     if (playerRef && playerRef.current) {
       playerRef.current.seekTo(seek);
     }
