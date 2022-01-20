@@ -131,6 +131,12 @@ const Video = ({
 
   useEffect(() => {
     if (playerRef && playerRef.current) {
+      playerRef.current.seekTo(seek || 0);
+    }
+  }, [src]);
+
+  useEffect(() => {
+    if (playerRef && playerRef.current) {
       playerRef.current.seekTo(seek);
     }
   }, [seek]);
