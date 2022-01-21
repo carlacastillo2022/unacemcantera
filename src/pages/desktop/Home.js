@@ -275,8 +275,8 @@ const Home = () => {
     }*/
 
     const find = {
-      index: videoSelected?.index + 2,
-      item: lessons[videoSelected?.index + 2],
+      index: 19,
+      item: lessons[19],
     };
 
     setDisabledButton(
