@@ -1,7 +1,6 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import Button from "@components/Button";
 import IconPlay from "@assets/images/play.svg";
 import {
   MdPlayArrow,
@@ -37,13 +36,14 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  background: rgba(0, 0, 0, 0.05);
+  background: transparent;
 `;
 
 const Content = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  height: 100%;
   width: 100%;
 `;
 
@@ -83,7 +83,6 @@ const ContentBottom = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 0px 16px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.2), transparent);
 `;
 
 const ContentProgress = styled.div`
@@ -136,43 +135,30 @@ const DescriptionDuration = styled.div`
   }
 `;
 
-const Controls = ({
-  title,
-  isFullScreen,
-  muted,
-  playing,
-  played,
-  totalDuration,
-  elapsedTime,
-  onMute,
-  onPlayPause,
-  onChangeDispayFormat,
-  onToggleFullScreen,
-  contentBottom,
-  controlsRef,
-}) => {
+const Controls = forwardRef(
+  (
+    {
+      isFullScreen,
+      muted,
+      playing,
+      played,
+      totalDuration,
+      elapsedTime,
+      onMute,
+      onPlayPause,
+      onChangeDispayFormat,
+      onToggleFullScreen,
+    },
+    ref
+  ) => {
+    const handleOnPlayPause = () => {
+      onPlayPause && onPlayPause();
+    };
 
-  const handleOnPlayPause = () => {
-    onPlayPause && onPlayPause();
-  };
-
-  return (
-    <Container playing={playing}>
-      {!playing && (
-        <Content style={{ flex: 1 }}>
-          <ContentMiddle>
-            {!playing && <img src={IconPlay} onClick={handleOnPlayPause}></img>}
-          </ContentMiddle>
-        </Content>
-      )}
-
-      {playing && (
-        <Content style={{ flex: 1 }} ref={controlsRef}>
-          {title && (
-            <ContentTop>
-              <h5>{title}</h5>
-            </ContentTop>
-          )}
+    return (
+      <Container ref={ref} playing={playing}>
+        <Content>
+          <ContentTop></ContentTop>
           <ContentMiddle></ContentMiddle>
           <ContentBottom>
             <ContentProgress>
@@ -200,21 +186,18 @@ const Controls = ({
             </ContentControls>
           </ContentBottom>
         </Content>
-      )}
-      {contentBottom && (<div style={{ position: "absolute", bottom: '50px', width: '100%' }}>{contentBottom}</div>)}
-    </Container>
-  );
-};
+      </Container>
+    );
+  }
+);
 
 Controls.propTypes = {
-  title: PropTypes.string,
   isFullScreen: PropTypes.bool,
   muted: PropTypes.bool,
   playing: PropTypes.bool,
   played: PropTypes.number,
   totalDuration: PropTypes.string,
   elapsedTime: PropTypes.string,
-  contentBottom: PropTypes.node,
   onMute: PropTypes.func,
   onPlayPause: PropTypes.func,
   onToggleFullScreen: PropTypes.func,

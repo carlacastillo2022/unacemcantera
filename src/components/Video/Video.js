@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
+import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import ReactPlayer from "react-player/lazy";
 import Button from "@components/Button";
-import screenful from "screenfull";
 import styled from "styled-components";
 import Loading from "@components/Loading";
 import Controls from "./components/Controls";
+import ControlsInteractive from "./components/ControlsInteractive";
 import ArrowDoubleRight from "@assets/images/arrow-double-right.svg";
 import ArrowReplay from "@assets/images/arrow-replay.svg";
-import { MdClose } from "react-icons/md";
 
 let count = 0;
 
@@ -17,7 +17,8 @@ const ContainerButtonsFooter = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  margin-top: 8px;
+  margin: 8px 0px;
+  width: 100%;
 `;
 
 const ContainerLoading = styled.div`
@@ -51,7 +52,7 @@ const FirstContentInteractivity = styled.div`
   flex-direction: column;
   flex: 1;
   height: 100%;
-  padding: 0px 18px;
+  padding: 0px;
 `;
 
 const SecondContentInteractivity = styled.div`
@@ -59,14 +60,25 @@ const SecondContentInteractivity = styled.div`
   flex-direction: column;
   flex: 1;
   height: 100%;
-  padding: 0px 18px;
+  padding: 0px;
 `;
 
 const ButtonInteractive = styled.button`
-  background: red;
+  background: transparent;
   border: 0px;
-  min-height: 45px;
-  min-width: 200px;
+  border-radius: 10px;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: flex-end;
+  background-position: center;
+  transition: background-color 0.8s;
+  cursor:pointer;
+  &:active {
+    background: linear-gradient(to right, #f3f3f3, transparent);
+    background-size: 100%;
+    transition: background 0s;
+  }
 `;
 
 const Description = styled.span`
@@ -97,7 +109,6 @@ const Video = ({
   height,
   delayToFinalizeVideo,
   src,
-  onReady,
   onProgress,
   onPlay,
   onEnded,
@@ -115,14 +126,17 @@ const Video = ({
 }) => {
   const playerRef = useRef(null);
   const controlsRef = useRef(null);
-  const playerContainerRef = useRef(null);
 
   const [timeDisplayFormat, setTimeDisplayFormat] = useState("normal");
   const [end, setEnd] = useState(false);
   const [endVideoInteractive, setEndVideoInteractive] = useState(false);
   const [endTime, setEndTime] = useState(false);
   const [key, setKey] = useState("");
+  const [widthVideo, setWidthVideo] = useState(width);
+  const [heightVideo, setHeightVideo] = useState(height);
   const [isLoadingBuffer, setIsLoadingBuffer] = useState(false);
+  const [lastMinuteSeenVideo, setLastMinuteSeenVideo] = useState(seek);
+  const fullScreenHandle = useFullScreenHandle();
   const [state, setState] = useState({
     muted: false,
     played: 0,
@@ -130,7 +144,33 @@ const Video = ({
   });
 
   useEffect(() => {
-    console.log("SEEK CAMBIADO", seek)
+    if (!fullScreenHandle.active) {
+      setWidthVideo(width);
+      setHeightVideo(height);
+    } else {
+      setWidthVideo("100vw");
+      setHeightVideo("100vh");
+    }
+  }, [fullScreenHandle.active]);
+
+  useEffect(() => {
+    if (controlsRef.current)
+      controlsRef.current.style.visibility = endVideoInteractive
+        ? "hidden"
+        : "visible";
+  }, [endVideoInteractive]);
+
+  useEffect(() => {
+    try {
+      if (playerRef && playerRef.current) {
+        setIsLoadingBuffer(true);
+        playerRef.current.seekTo(seek);
+        setState({ ...state, played: seek });
+      }
+    } catch (e) {}
+  }, [src]);
+
+  useEffect(() => {
     if (playerRef && playerRef.current) {
       playerRef.current.seekTo(seek);
     }
@@ -139,7 +179,6 @@ const Video = ({
   useEffect(() => {
     try {
       if (playerRef && playerRef.current) {
-        console.log("playerRef.current", playerRef.current);
         playerRef.current.seekTo(state.played);
       }
     } catch (e) {}
@@ -148,10 +187,19 @@ const Video = ({
   useEffect(() => {
     setKey(playing ? "playing" : "stop");
     if (playing) setEndTime(false);
-    controlsRef.current.style.visibility = !playing ? "visible" : "hidden";
+    if (!hasInteractivity)
+      if (controlsRef.current)
+        controlsRef.current.style.visibility = !playing ? "visible" : "hidden";
   }, [playing]);
 
   const handlePlayPause = () => {
+    if (
+      lastMinuteSeenVideo &&
+      Math.trunc(lastMinuteSeenVideo) ===
+        Math.trunc(playerRef?.current?.getDuration())
+    ) {
+      setState({ ...state, played: 0 });
+    }
     setPlaying(!playing);
     onPlay && onPlay();
   };
@@ -159,13 +207,18 @@ const Video = ({
   const handleOnProgress = (changeState) => {
     if (playing) {
       if (count > 2) {
-        controlsRef.current.style.visibility = "hidden";
+        if (controlsRef.current)
+          controlsRef.current.style.visibility = "hidden";
         count = 0;
       }
-      if (controlsRef.current.style.visibility == "visible") {
+      if (
+        controlsRef.current &&
+        controlsRef.current.style.visibility == "visible"
+      ) {
         count += 1;
       }
       setState({ ...state, ...changeState });
+      setLastMinuteSeenVideo(changeState.playedSeconds);
       onProgress && onProgress(changeState);
     }
   };
@@ -186,7 +239,19 @@ const Video = ({
   //--- events controls
 
   const toggleFullScreen = () => {
-    screenful.toggle(playerContainerRef.current);
+    /*if (!screenful.isFullscreen) {
+      setWidthVideo("100vw");
+      setHeightVideo("100vh");
+    } else {
+      setWidthVideo(width);
+      setHeightVideo(height);
+    } */
+    //screenful.toggle(playerContainerRef.current);
+    if (fullScreenHandle.active) {
+      fullScreenHandle.exit();
+    } else {
+      fullScreenHandle.enter();
+    }
   };
 
   const handleOnComplete = () => {
@@ -200,9 +265,39 @@ const Video = ({
 
   const handleMouseMove = () => {
     if (!hasInteractivity) {
-      controlsRef.current.style.visibility = "visible";
+      if (controlsRef.current) controlsRef.current.style.visibility = "visible";
       count = 0;
     }
+  };
+
+  const renderContentBottom = () => {
+    return showButtonsFooter ? (
+      <ContainerButtonsFooter>
+        <Button
+          iconLeft={ArrowReplay}
+          styleIconLeft={{ height: "30px", width: "30px" }}
+          onClick={() => {
+            setEndTime(false);
+            setPlaying(true);
+            setState({ ...state, played: 0 });
+            if (playerRef) playerRef.current.seekTo(0);
+          }}
+          size="small"
+          styleButton={{ marginRight: "8px" }}
+        />
+        <Button
+          label="Seguir"
+          iconRight={ArrowDoubleRight}
+          onClick={() => {
+            setEndTime(false);
+            onClickNextVideo &&
+              onClickNextVideo(playerRef?.current?.getDuration());
+          }}
+          styleIconRight={{ height: "30px", width: "30px" }}
+          size="small"
+        />
+      </ContainerButtonsFooter>
+    ) : null;
   };
 
   const currentTime =
@@ -222,123 +317,118 @@ const Video = ({
 
   const { muted, played } = state;
 
-  console.log("HAS INTERACTIVITY", hasInteractivity);
-
   return (
-    <div ref={playerContainerRef}>
+    <div>
       <>
-        <div style={{ position: "relative" }} onMouseMove={handleMouseMove}>
-          <ReactPlayer
-            key={key}
-            ref={playerRef}
-            width={width}
-            height={height}
-            url={src}
-            playing={playing}
-            onProgress={handleOnProgress}
-            onEnded={handleOnEnded}
-            muted={muted}
-            onBuffer={() => setIsLoadingBuffer(true)}
-            onBufferEnd={() => setIsLoadingBuffer(false)}
-          />
+        <FullScreen handle={fullScreenHandle}>
+          <div
+            style={{
+              width: widthVideo,
+              height: heightVideo,
+              background: "transparent",
+              position: "relative",
+            }}
+            onMouseMove={handleMouseMove}
+          >
+            <ReactPlayer
+              key={key}
+              ref={playerRef}
+              width={widthVideo}
+              height={heightVideo}
+              url={src}
+              playsinline
+              playing={playing}
+              onProgress={handleOnProgress}
+              onEnded={handleOnEnded}
+              onReady={() => {
+                setIsLoadingBuffer(false);
+              }}
+              muted={muted}
+              onBuffer={() => setIsLoadingBuffer(true)}
+              onBufferEnd={() => setIsLoadingBuffer(false)}
+            />
+            {hasInteractivity && (
+              <ControlsInteractive
+                ref={controlsRef}
+                playing={playing}
+                muted={muted}
+                played={played}
+                elapsedTime={elapsedTime}
+                totalDuration={totalDuration}
+                onPlayPause={handlePlayPause}
+                onToggleFullScreen={toggleFullScreen}
+                onMute={handleMute}
+              />
+            )}
 
-          <Controls
-            ref={controlsRef}
-            title={title}
-            playing={playing}
-            muted={muted}
-            played={played}
-            elapsedTime={elapsedTime}
-            totalDuration={totalDuration}
-            onPlayPause={handlePlayPause}
-            onToggleFullScreen={toggleFullScreen}
-            onMute={handleMute}
-          />
-          {hasInteractivity && endVideoInteractive && (
-            <ContainerInteractivity flexDirection="row">
-              <FirstContentInteractivity>
-                <div style={{ display: "flex", flex: 1 }}></div>
-                <div
-                  style={{
-                    display: "flex",
-                    flex: 1,
-                    alignItems: "center",
-                    justifyContent: "flex-end",
-                  }}
-                  onClick={onClickFirst}
-                ></div>
-              </FirstContentInteractivity>
-              <SecondContentInteractivity>
-                <div style={{ display: "flex", flex: 1 }}></div>
-                <div
-                  style={{
-                    display: "flex",
-                    flex: 1,
-                    alignItems: "center",
-                    justifyContent: "flex-start",
-                  }}
-                  onClick={onClickSecond}
-                ></div>
-              </SecondContentInteractivity>
-            </ContainerInteractivity>
-          )}
-          {delayToFinalizeVideo > 0 && endTime && !playing && (
-            <ContainerLoading>
-              <div
-                onClick={() => {
-                  setEndTime(false);
-                }}
-              >
-                <CountdownCircleTimer
-                  size={50}
-                  strokeWidth={6}
-                  isPlaying
-                  duration={delayToFinalizeVideo}
-                  colors={["#FFFFFF"]}
-                  onComplete={handleOnComplete}
-                >
-                  {({ remainingTime }) => (
-                    <MdClose style={{ color: "#000000" }} />
-                  )}
-                </CountdownCircleTimer>
-              </div>
-            </ContainerLoading>
-          )}
-          {isLoadingVideo ||
-            (isLoadingBuffer && (
+            {!hasInteractivity && (
+              <Controls
+                controlsRef={controlsRef}
+                showControlsPlayer={!hasInteractivity}
+                title={title}
+                playing={playing}
+                muted={muted}
+                played={played}
+                elapsedTime={elapsedTime}
+                totalDuration={totalDuration}
+                onPlayPause={handlePlayPause}
+                isFullScreen={fullScreenHandle.active}
+                onToggleFullScreen={toggleFullScreen}
+                onMute={handleMute}
+                contentBottom={
+                  fullScreenHandle.active ? renderContentBottom() : null
+                }
+              />
+            )}
+            {hasInteractivity && endVideoInteractive && (
+              <ContainerInteractivity flexDirection="row">
+                <FirstContentInteractivity>
+                  <div style={{ display: "flex", flex: 1 }}></div>
+                  <div style={{ display: "flex", flex: 1 }}></div>
+                  <ButtonInteractive
+                    style={{ justifyContent: "flex-end" }}
+                    onClick={onClickFirst}
+                  ></ButtonInteractive>
+                </FirstContentInteractivity>
+                <SecondContentInteractivity>
+                  <div style={{ display: "flex", flex: 1 }}></div>
+                  <div style={{ display: "flex", flex: 1 }}></div>
+                  <ButtonInteractive
+                    style={{ justifyContent: "flex-start" }}
+                    onClick={onClickSecond}
+                  ></ButtonInteractive>
+                </SecondContentInteractivity>
+              </ContainerInteractivity>
+            )}
+            {delayToFinalizeVideo > 0 && endTime && !playing && (
               <ContainerLoading>
-                <Loading type="Oval" color="#FFFFFF" />
+                <div
+                  onClick={() => {
+                    setEndTime(false);
+                  }}
+                >
+                  <CountdownCircleTimer
+                    size={50}
+                    strokeWidth={8}
+                    isPlaying
+                    duration={delayToFinalizeVideo}
+                    colors={["#FFFFFF"]}
+                    onComplete={handleOnComplete}
+                  >
+                    {({ remainingTime }) => <></>}
+                  </CountdownCircleTimer>
+                </div>
               </ContainerLoading>
-            ))}
-        </div>
-
-        {showButtonsFooter && (end || endVideoInteractive) && (
-          <ContainerButtonsFooter>
-            <Button
-              iconLeft={ArrowReplay}
-              styleIconLeft={{ height: "30px", width: "30px" }}
-              onClick={() => {
-                setEndTime(false);
-                setPlaying(true);
-                setState({ ...state, played: 0 });
-                if (playerRef) playerRef.current.seekTo(0);
-              }}
-              size="small"
-              styleButton={{ marginRight: "8px" }}
-            />
-            <Button
-              label="Seguir"
-              iconRight={ArrowDoubleRight}
-              onClick={() => {
-                setEndTime(false);
-                onClickNextVideo &&
-                  onClickNextVideo(playerRef?.current?.getDuration());
-              }}
-              styleIconRight={{ height: "30px", width: "30px" }}
-              size="small"
-            />
-          </ContainerButtonsFooter>
-        )}
+            )}
+            {isLoadingVideo ||
+              (isLoadingBuffer && (
+                <ContainerLoading>
+                  <Loading type="Oval" color="#FFFFFF" />
+                </ContainerLoading>
+              ))}
+          </div>
+        </FullScreen>
+        {renderContentBottom()}
       </>
     </div>
   );

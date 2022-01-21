@@ -164,7 +164,6 @@ const Lesson = () => {
   };
 
   const handleOnEnded = (currentTime) => {
-    console.log("olayyyyy", isPlay);
     if (isPlay) {
       isPlay = false;
       isEnd = true;
@@ -222,8 +221,8 @@ const Lesson = () => {
             onInitTimer={handleOnInitTimer}
             onClickNextVideo={onClickNextVideo}
             isLoadingVideo={isLoading}
-            showButtonsFooter={showButtonsFooter}
-            delayToFinalizeVideo={10}
+            showButtonsFooter
+            delayToFinalizeVideo={5}
             title={videoSelected?.item?.nombreVideo || ""}
             hasInteractivity={videoSelected?.index === 13}
           />

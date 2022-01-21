@@ -111,7 +111,6 @@ const Questionary = () => {
       );
       return !newItem ? false : true;
     });
-    console.log("listBoolean", listBoolean);
     const validResponse = listBoolean.includes(false);
     setDisabledButton(validResponse);
   };

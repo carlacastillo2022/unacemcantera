@@ -167,7 +167,9 @@ const Steps = ({
         <Container>
           {lessons.map((item, index) => {
             if (isCompleted) {
-              isCompleted = item?.completoVista;
+              isCompleted = item?.completoVista
+                ? item?.completoVista === "SI"
+                : item?.completoVista;
               return (
                 <Content
                   key={index}
@@ -215,7 +217,9 @@ const Steps = ({
                 </Content>
               );
             } else {
-              isCompleted = item?.completoVista;
+              isCompleted = item?.completoVista
+                ? item?.completoVista === "SI"
+                : item?.completoVista;
               return (
                 <Content
                   key={index}
@@ -238,7 +242,7 @@ const Steps = ({
                       <VerticalBar height={index === 0 ? 49 : 45} />
                     )}
                   </ContentLeft>
-                  <StyledLock src={Lock}/>
+                  <StyledLock src={Lock} />
                   <ContentRight
                     style={{
                       marginTop: index > 0 ? 20 : 0,

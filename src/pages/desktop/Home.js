@@ -245,6 +245,7 @@ const Home = () => {
   };
 
   const onClickFirst = () => {
+
     const find = {
       index: videoSelected?.index + 1,
       item: lessons[videoSelected?.index + 1],
@@ -257,11 +258,22 @@ const Home = () => {
       setSeek(0);
       setVideoSelected(find);
       isPlay = true;
+      isSelectedVideo = true;
       setPlaying(true);
     }
   };
 
   const onClickSecond = () => {
+    /*const firstIndex = lessons.findIndex(item => item.ultimoMinutoVisto === null);
+    const currentIndex = videoSelected.index + 1;
+
+    if(firstIndex === currentIndex) {
+
+    } else {
+      const max = Math.max(firstIndex, currentIndex);
+      const min = Math.min(firstIndex, currentIndex)
+    }*/
+
     const find = {
       index: videoSelected?.index + 2,
       item: lessons[videoSelected?.index + 2],
@@ -274,6 +286,7 @@ const Home = () => {
       setSeek(0);
       setVideoSelected(find);
       isPlay = true;
+      isSelectedVideo = true;
       setPlaying(true);
     }
   };
@@ -317,11 +330,12 @@ const Home = () => {
                   onClickNextVideo={onClickNextVideo}
                   isLoadingVideo={isLoading}
                   showButtonsFooter={
-                    !isSelectedVideo ? false : showButtonsFooter
+                    !isSelectedVideo ? false : true
                   }
-                  delayToFinalizeVideo={!isSelectedVideo ? 0 : 10}
+                  delayToFinalizeVideo={!isSelectedVideo ? 0 : 5}
                   title={videoSelected?.item?.nombreVideo || ""}
-                  hasInteractivity={videoSelected?.index === 13}
+                  hasInteractivity={videoSelected?.index === 12}
+                  lastMinuteSeen={videoSelected?.item?.ultimoMinutoVisto}
                 />
               </>
             ) : (
