@@ -123,6 +123,7 @@ const Video = ({
     if (templateInteractividad) {
       setImage("");
       setEndVideoInteractive(false);
+      setKey("");
     }
     try {
       if (playerRef && playerRef.current) {
