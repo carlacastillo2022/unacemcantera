@@ -166,7 +166,7 @@ const Steps = ({
         </ContainerProgress>
         <Container>
           {lessons.map((item, index) => {
-            if (isCompleted || !isCompleted) {
+            if (isCompleted) {
               isCompleted = item?.completoVista
                 ? item?.completoVista === "SI"
                 : item?.completoVista;
