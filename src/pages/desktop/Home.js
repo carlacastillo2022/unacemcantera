@@ -74,7 +74,7 @@ const Home = () => {
   const [token, setToken] = useQueryParam("token", StringParam);
   const [idCurso, setIdCurso] = useQueryParam("idCurso", StringParam);
 
-  const [disabledButton, setDisabledButton] = useState(true);
+  const [disabledButton, setDisabledButton] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSelectedVideo, setIsSelectedVideo] = useState(false);
   const [playing, setPlaying] = useState(false);

@@ -123,7 +123,6 @@ const Video = ({
     if (templateInteractividad) {
       setImage("");
       setEndVideoInteractive(false);
-      setKey("");
     }
     try {
       if (playerRef && playerRef.current) {
@@ -150,7 +149,9 @@ const Video = ({
 
   useEffect(() => {
     setKey(playing ? "playing" : "stop");
-    if (playing) setEndTime(false);
+    if (playing) {
+      setEndTime(false);
+    }
     if (!playing && templateInteractividad) setImage("");
     //if (!templateInteractividad)
     if (controlsRef.current)
@@ -221,11 +222,13 @@ const Video = ({
       if (controlsRef.current) controlsRef.current.style.display = "block";
       count = 0;
     } else {
-      if (controlsRef.current) {
+      if (controlsRef.current) controlsRef.current.style.display = "block";
+      count = 0;
+      /*if (controlsRef.current) {
         if (endVideoInteractive) controlsRef.current.style.display = "none";
         else controlsRef.current.style.display = "block";
       }
-      count = 0;
+      count = 0;*/
     }
   };
 
