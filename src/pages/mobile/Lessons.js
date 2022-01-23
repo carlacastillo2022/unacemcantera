@@ -195,6 +195,22 @@ const Lesson = () => {
     );
   };
 
+  const onClickCTA = (idVideo, currentTime) => {
+    const find = {
+      index: lessons.findIndex((item) => item.idVideo === idVideo),
+      item: lessons.find((item) => item.idVideo === idVideo),
+    };
+    setDisabledButton(
+      lessons?.find((item) => item.completoVista !== "SI") ? true : false
+    );
+    if (videoSelected.index !== -1) {
+      setSeek(0);
+      setVideoSelected(find);
+      isPlay = true;
+      setPlaying(true);
+    }
+  };
+
   return (
     <div ref={videoContainer}>
       <Link
@@ -220,12 +236,17 @@ const Lesson = () => {
             onEnded={handleOnEnded}
             onInitTimer={handleOnInitTimer}
             onClickNextVideo={onClickNextVideo}
+            onClickCTA={onClickCTA}
             isLoadingVideo={isLoading}
             showButtonsFooter
             delayToFinalizeVideo={5}
             title={videoSelected?.item?.nombreVideo || ""}
             templateInteractividad={videoSelected?.item?.templateInteractividad}
-            ctas={videoSelected?.item?.ctas ? JSON.parse(videoSelected?.item?.ctas): null}
+            ctas={
+              videoSelected?.item?.ctas
+                ? JSON.parse(videoSelected?.item?.ctas)
+                : null
+            }
             lastMinuteSeen={videoSelected?.item?.ultimoMinutoVisto}
           />
         ) : questionary?.length > 0 ? (
