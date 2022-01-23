@@ -142,6 +142,82 @@ const Steps = ({
     return accumulator;
   };
 
+  const renderLockStep = (index, item) => {
+    return (
+      <Content
+        key={index}
+        height={index === 0 ? 81 : 97}
+        background={index === videoSelected?.index ? "#f3f3f3" : "#fafafa"}
+        style={{
+          padding: index === 0 ? "16px 16px 0px" : "0px 16px 0px",
+        }}
+      >
+        <ContentLeft>
+          {index > 0 && <VerticalBar height={20} />}
+          <Circle>
+            <span>{index + 1 < 10 ? `0${index + 1}` : index + 1}</span>
+          </Circle>
+          {index !== lessons.length - 1 && (
+            <VerticalBar height={index === 0 ? 49 : 45} />
+          )}
+        </ContentLeft>
+        <StyledLock src={Lock} />
+        <ContentRight
+          style={{
+            marginTop: index > 0 ? 20 : 0,
+          }}
+        >
+          <Title>{item.nombreVideo}</Title>
+          <Description>{`Duración: ${item.duracion}/ Video`}</Description>
+        </ContentRight>
+        {index === videoSelected?.index ? (
+          <StyledArrowUp src={ArrowUp} marginTop={index > 0 ? 26 : 6} />
+        ) : (
+          <StyledArrowDown src={ArrowDown} marginTop={index > 0 ? 26 : 6} />
+        )}
+      </Content>
+    );
+  };
+
+  const renderUnlockStep = (index, item) => {
+    return (
+      <Content
+        key={index}
+        height={index === 0 ? 81 : 97}
+        background={index === videoSelected?.index ? "#f3f3f3" : "#fafafa"}
+        onClick={() => onClick(index, item)}
+        style={{
+          padding: index === 0 ? "16px 16px 0px" : "0px 16px 0px",
+        }}
+      >
+        <ContentLeft>
+          {index > 0 && <VerticalBar height={20} isLight />}
+          <Circle isLight>
+            <span>{index + 1 < 10 ? `0${index + 1}` : index + 1}</span>
+          </Circle>
+          {index !== lessons.length - 1 && (
+            <VerticalBar height={index === 0 ? 49 : 45} isLight />
+          )}
+        </ContentLeft>
+        <ContentRight
+          marginTop={index > 0 ? 20 : 0}
+          style={{
+            marginTop: index > 0 ? 20 : 0,
+            marginLeft: "18px",
+          }}
+        >
+          <Title>{item.nombreVideo}</Title>
+          <Description>{`Duración: ${item.duracion}/ Video`}</Description>
+        </ContentRight>
+        {index === videoSelected?.index ? (
+          <StyledArrowUp src={ArrowUp} marginTop={index > 0 ? 26 : 6} />
+        ) : (
+          <StyledArrowDown src={ArrowDown} marginTop={index > 0 ? 26 : 6} />
+        )}
+      </Content>
+    );
+  };
+
   const advancedLessons = lessons.reduce(reducerSum, 0);
 
   if (lessons && lessons.length > 0)
@@ -170,100 +246,12 @@ const Steps = ({
               isCompleted = item?.completoVista
                 ? item?.completoVista === "SI"
                 : item?.completoVista;
-              return (
-                <Content
-                  key={index}
-                  height={index === 0 ? 81 : 97}
-                  background={
-                    index === videoSelected?.index ? "#f3f3f3" : "#fafafa"
-                  }
-                  onClick={() => onClick(index, item)}
-                  style={{
-                    padding: index === 0 ? "16px 16px 0px" : "0px 16px 0px",
-                  }}
-                >
-                  <ContentLeft>
-                    {index > 0 && <VerticalBar height={20} isLight />}
-                    <Circle isLight>
-                      <span>
-                        {index + 1 < 10 ? `0${index + 1}` : index + 1}
-                      </span>
-                    </Circle>
-                    {index !== lessons.length - 1 && (
-                      <VerticalBar height={index === 0 ? 49 : 45} isLight />
-                    )}
-                  </ContentLeft>
-                  <ContentRight
-                    marginTop={index > 0 ? 20 : 0}
-                    style={{
-                      marginTop: index > 0 ? 20 : 0,
-                      marginLeft: "18px",
-                    }}
-                  >
-                    <Title>{item.nombreVideo}</Title>
-                    <Description>{`Duración: ${item.duracion}/ Video`}</Description>
-                  </ContentRight>
-                  {index === videoSelected?.index ? (
-                    <StyledArrowUp
-                      src={ArrowUp}
-                      marginTop={index > 0 ? 26 : 6}
-                    />
-                  ) : (
-                    <StyledArrowDown
-                      src={ArrowDown}
-                      marginTop={index > 0 ? 26 : 6}
-                    />
-                  )}
-                </Content>
-              );
+              return renderUnlockStep(index, item);
             } else {
               isCompleted = item?.completoVista
                 ? item?.completoVista === "SI"
                 : item?.completoVista;
-              return (
-                <Content
-                  key={index}
-                  height={index === 0 ? 81 : 97}
-                  background={
-                    index === videoSelected?.index ? "#f3f3f3" : "#fafafa"
-                  }
-                  style={{
-                    padding: index === 0 ? "16px 16px 0px" : "0px 16px 0px",
-                  }}
-                >
-                  <ContentLeft>
-                    {index > 0 && <VerticalBar height={20} />}
-                    <Circle>
-                      <span>
-                        {index + 1 < 10 ? `0${index + 1}` : index + 1}
-                      </span>
-                    </Circle>
-                    {index !== lessons.length - 1 && (
-                      <VerticalBar height={index === 0 ? 49 : 45} />
-                    )}
-                  </ContentLeft>
-                  <StyledLock src={Lock} />
-                  <ContentRight
-                    style={{
-                      marginTop: index > 0 ? 20 : 0,
-                    }}
-                  >
-                    <Title>{item.nombreVideo}</Title>
-                    <Description>{`Duración: ${item.duracion}/ Video`}</Description>
-                  </ContentRight>
-                  {index === videoSelected?.index ? (
-                    <StyledArrowUp
-                      src={ArrowUp}
-                      marginTop={index > 0 ? 26 : 6}
-                    />
-                  ) : (
-                    <StyledArrowDown
-                      src={ArrowDown}
-                      marginTop={index > 0 ? 26 : 6}
-                    />
-                  )}
-                </Content>
-              );
+              return renderLockStep(index, item);
             }
           })}
         </Container>

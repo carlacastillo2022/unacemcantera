@@ -120,8 +120,11 @@ const Video = ({
   }, [endVideoInteractive]);
 
   useEffect(() => {
-    try {
+    if (templateInteractividad) {
       setImage("");
+      setEndVideoInteractive(false);
+    }
+    try {
       if (playerRef && playerRef.current) {
         setIsLoadingBuffer(true);
         playerRef.current.seekTo(seek);
@@ -344,8 +347,12 @@ const Video = ({
               endVideoInteractive &&
               templateInteractividad === "template1" && (
                 <Template1
-                  onClickFirst={() => onClickCTA(ctas[`cta1`])}
-                  onClickSecond={() => onClickCTA(ctas[`cta2`])}
+                  onClickFirst={() =>
+                    onClickCTA(ctas[`cta1`], playerRef?.current?.getDuration())
+                  }
+                  onClickSecond={() =>
+                    onClickCTA(ctas[`cta2`], playerRef?.current?.getDuration())
+                  }
                 />
               )}
 
@@ -354,9 +361,15 @@ const Video = ({
               templateInteractividad === "template2" && (
                 <Template2
                   src={image}
-                  onClickFirst={() => setImage(ctas[`cta1`])}
-                  onClickSecond={() => setImage(ctas[`cta2`])}
-                  onClickThird={() => setImage(ctas[`cta3`])}
+                  onClickFirst={() =>
+                    setImage(ctas[`cta1`], playerRef?.current?.getDuration())
+                  }
+                  onClickSecond={() =>
+                    setImage(ctas[`cta2`], playerRef?.current?.getDuration())
+                  }
+                  onClickThird={() =>
+                    setImage(ctas[`cta3`], playerRef?.current?.getDuration())
+                  }
                 />
               )}
 
@@ -364,9 +377,15 @@ const Video = ({
               endVideoInteractive &&
               templateInteractividad === "template3" && (
                 <Template3
-                  onClickFirst={() => onClickCTA(ctas[`cta1`])}
-                  onClickSecond={() => onClickCTA(ctas[`cta2`])}
-                  onClickThird={() => onClickCTA(ctas[`cta3`])}
+                  onClickFirst={() =>
+                    onClickCTA(ctas[`cta1`], playerRef?.current?.getDuration())
+                  }
+                  onClickSecond={() =>
+                    onClickCTA(ctas[`cta2`], playerRef?.current?.getDuration())
+                  }
+                  onClickThird={() =>
+                    onClickCTA(ctas[`cta3`], playerRef?.current?.getDuration())
+                  }
                 />
               )}
 
@@ -375,8 +394,12 @@ const Video = ({
               templateInteractividad === "template4" && (
                 <Template4
                   src={image}
-                  onClickFirst={() => setImage(ctas[`cta1`])}
-                  onClickSecond={() => setImage(ctas[`cta2`])}
+                  onClickFirst={() =>
+                    setImage(ctas[`cta1`], playerRef?.current?.getDuration())
+                  }
+                  onClickSecond={() =>
+                    setImage(ctas[`cta2`], playerRef?.current?.getDuration())
+                  }
                 />
               )}
 
@@ -385,13 +408,27 @@ const Video = ({
               templateInteractividad === "template5" && (
                 <Template5
                   src={image}
-                  onClickFirst={() => setImage(ctas[`cta1`])}
-                  onClickSecond={() => setImage(ctas[`cta2`])}
-                  onClickThird={() => setImage(ctas[`cta3`])}
-                  onClickFourth={() => setImage(ctas[`cta4`])}
-                  onClickFifth={() => setImage(ctas[`cta5`])}
-                  onClickSixth={() => setImage(ctas[`cta6`])}
-                  onClickSeventh={() => setImage(ctas[`cta7`])}
+                  onClickFirst={() =>
+                    setImage(ctas[`cta1`], playerRef?.current?.getDuration())
+                  }
+                  onClickSecond={() =>
+                    setImage(ctas[`cta2`], playerRef?.current?.getDuration())
+                  }
+                  onClickThird={() =>
+                    setImage(ctas[`cta3`], playerRef?.current?.getDuration())
+                  }
+                  onClickFourth={() =>
+                    setImage(ctas[`cta4`], playerRef?.current?.getDuration())
+                  }
+                  onClickFifth={() =>
+                    setImage(ctas[`cta5`], playerRef?.current?.getDuration())
+                  }
+                  onClickSixth={() =>
+                    setImage(ctas[`cta6`], playerRef?.current?.getDuration())
+                  }
+                  onClickSeventh={() =>
+                    setImage(ctas[`cta7`], playerRef?.current?.getDuration())
+                  }
                 />
               )}
 

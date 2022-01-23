@@ -103,12 +103,13 @@ const Home = () => {
   useEffect(() => {
     if (dataTracking?.success && isEnd) {
       isEnd = false;
-      setIsLoading(true);
       fetchQuestions(
         token,
         videoSelected?.item?.idCurso,
         videoSelected?.item?.idVideo
       );
+    } else {
+      setIsLoading(false);
     }
   }, [dataTracking]);
 
@@ -196,6 +197,7 @@ const Home = () => {
     if (isPlay && isSelectedVideo) {
       isPlay = false;
       isEnd = true;
+      setIsLoading(true);
       fetchTracking(
         token,
         videoSelected?.item?.idCurso,
@@ -214,6 +216,7 @@ const Home = () => {
     isPlay = false;
     isEnd = true;
     setPlaying(false);
+    setIsLoading(true);
     fetchTracking(
       token,
       videoSelected?.item?.idCurso,
@@ -244,13 +247,11 @@ const Home = () => {
     });
   };
 
-  const onClickCTA = (idVideo) => {
-
+  const onClickCTA = (idVideo, currentTime) => {
     const find = {
-      index: lessons.findIndex(item => item.idVideo === idVideo), //videoSelected?.index + 1,
-      item: lessons.find(item => item.idVideo === idVideo),
+      index: lessons.findIndex((item) => item.idVideo === idVideo),
+      item: lessons.find((item) => item.idVideo === idVideo),
     };
-
     setDisabledButton(
       lessons?.find((item) => item.completoVista !== "SI") ? true : false
     );
@@ -299,13 +300,17 @@ const Home = () => {
                   onInitTimer={handleOnInitTimer}
                   onClickNextVideo={onClickNextVideo}
                   isLoadingVideo={isLoading}
-                  showButtonsFooter={
-                    !isSelectedVideo ? false : true
-                  }
+                  showButtonsFooter={!isSelectedVideo ? false : true}
                   delayToFinalizeVideo={!isSelectedVideo ? 0 : 5}
                   title={videoSelected?.item?.nombreVideo || ""}
-                  templateInteractividad={videoSelected?.item?.templateInteractividad}
-                  ctas={videoSelected?.item?.ctas ? JSON.parse(videoSelected?.item?.ctas): null}
+                  templateInteractividad={
+                    videoSelected?.item?.templateInteractividad
+                  }
+                  ctas={
+                    videoSelected?.item?.ctas
+                      ? JSON.parse(videoSelected?.item?.ctas)
+                      : null
+                  }
                   lastMinuteSeen={videoSelected?.item?.ultimoMinutoVisto}
                 />
               </>
