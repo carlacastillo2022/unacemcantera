@@ -258,7 +258,6 @@ const Home = () => {
       setSeek(0);
       setVideoSelected(find);
       isPlay = true;
-      isSelectedVideo = true;
       setPlaying(true);
     }
   };
