@@ -224,7 +224,9 @@ const Lesson = () => {
             showButtonsFooter
             delayToFinalizeVideo={5}
             title={videoSelected?.item?.nombreVideo || ""}
-            hasInteractivity={videoSelected?.index === 13}
+            templateInteractividad={videoSelected?.item?.templateInteractividad}
+            ctas={videoSelected?.item?.ctas ? JSON.parse(videoSelected?.item?.ctas): null}
+            lastMinuteSeen={videoSelected?.item?.ultimoMinutoVisto}
           />
         ) : questionary?.length > 0 ? (
           <QuickQuestionary

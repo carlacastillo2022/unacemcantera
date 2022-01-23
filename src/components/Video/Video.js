@@ -7,6 +7,11 @@ import Button from "@components/Button";
 import styled from "styled-components";
 import Loading from "@components/Loading";
 import Controls from "./components/Controls";
+import Template1 from "./components/Interactivity/Template1";
+import Template2 from "./components/Interactivity/Template2";
+import Template3 from "./components/Interactivity/Template3";
+import Template4 from "./components/Interactivity/Template4";
+import Template5 from "./components/Interactivity/Template5";
 import ControlsInteractive from "./components/ControlsInteractive";
 import ArrowDoubleRight from "@assets/images/arrow-double-right.svg";
 import ArrowReplay from "@assets/images/arrow-replay.svg";
@@ -32,53 +37,6 @@ const ContainerLoading = styled.div`
   justify-content: center;
   align-items: center;
   background: rgba(0, 0, 0, 0.05);
-`;
-
-const ContainerInteractivity = styled.div`
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  margin: auto;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: ${({ flexDirection }) => flexDirection};
-`;
-
-const FirstContentInteractivity = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: 100%;
-  padding: 0px;
-`;
-
-const SecondContentInteractivity = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: 100%;
-  padding: 0px;
-`;
-
-const ButtonInteractive = styled.button`
-  background: transparent;
-  border: 0px;
-  border-radius: 10px;
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: flex-end;
-  background-position: center;
-  transition: background-color 0.8s;
-  cursor:pointer;
-  &:active {
-    background: linear-gradient(to right, #f3f3f3, transparent);
-    background-size: 100%;
-    transition: background 0s;
-  }
 `;
 
 const Description = styled.span`
@@ -120,9 +78,9 @@ const Video = ({
   title,
   showButtonsFooter,
   setPlaying,
-  hasInteractivity,
-  onClickFirst,
-  onClickSecond,
+  templateInteractividad,
+  ctas,
+  onClickCTA,
 }) => {
   const playerRef = useRef(null);
   const controlsRef = useRef(null);
@@ -137,6 +95,7 @@ const Video = ({
   const [isLoadingBuffer, setIsLoadingBuffer] = useState(false);
   const [lastMinuteSeenVideo, setLastMinuteSeenVideo] = useState(seek);
   const fullScreenHandle = useFullScreenHandle();
+  const [image, setImage] = useState();
   const [state, setState] = useState({
     muted: false,
     played: 0,
@@ -155,13 +114,14 @@ const Video = ({
 
   useEffect(() => {
     if (controlsRef.current)
-      controlsRef.current.style.visibility = endVideoInteractive
-        ? "hidden"
-        : "visible";
+      controlsRef.current.style.display = endVideoInteractive
+        ? "none"
+        : "block";
   }, [endVideoInteractive]);
 
   useEffect(() => {
     try {
+      setImage("");
       if (playerRef && playerRef.current) {
         setIsLoadingBuffer(true);
         playerRef.current.seekTo(seek);
@@ -187,9 +147,10 @@ const Video = ({
   useEffect(() => {
     setKey(playing ? "playing" : "stop");
     if (playing) setEndTime(false);
-    if (!hasInteractivity)
-      if (controlsRef.current)
-        controlsRef.current.style.visibility = !playing ? "visible" : "hidden";
+    if (!playing && templateInteractividad) setImage("");
+    //if (!templateInteractividad)
+    if (controlsRef.current)
+      controlsRef.current.style.display = !playing ? "block" : "none";
   }, [playing]);
 
   const handlePlayPause = () => {
@@ -207,14 +168,10 @@ const Video = ({
   const handleOnProgress = (changeState) => {
     if (playing) {
       if (count > 2) {
-        if (controlsRef.current)
-          controlsRef.current.style.visibility = "hidden";
+        if (controlsRef.current) controlsRef.current.style.display = "none";
         count = 0;
       }
-      if (
-        controlsRef.current &&
-        controlsRef.current.style.visibility == "visible"
-      ) {
+      if (controlsRef.current && controlsRef.current.style.display == "block") {
         count += 1;
       }
       setState({ ...state, ...changeState });
@@ -224,7 +181,7 @@ const Video = ({
   };
 
   const handleOnEnded = () => {
-    if (!hasInteractivity) {
+    if (!templateInteractividad) {
       setPlaying(false);
       setEnd(true);
       setEndTime(true);
@@ -239,14 +196,6 @@ const Video = ({
   //--- events controls
 
   const toggleFullScreen = () => {
-    /*if (!screenful.isFullscreen) {
-      setWidthVideo("100vw");
-      setHeightVideo("100vh");
-    } else {
-      setWidthVideo(width);
-      setHeightVideo(height);
-    } */
-    //screenful.toggle(playerContainerRef.current);
     if (fullScreenHandle.active) {
       fullScreenHandle.exit();
     } else {
@@ -264,8 +213,14 @@ const Video = ({
   };
 
   const handleMouseMove = () => {
-    if (!hasInteractivity) {
-      if (controlsRef.current) controlsRef.current.style.visibility = "visible";
+    if (!templateInteractividad) {
+      if (controlsRef.current) controlsRef.current.style.display = "block";
+      count = 0;
+    } else {
+      if (controlsRef.current) {
+        if (endVideoInteractive) controlsRef.current.style.display = "none";
+        else controlsRef.current.style.display = "block";
+      }
       count = 0;
     }
   };
@@ -277,6 +232,10 @@ const Video = ({
           iconLeft={ArrowReplay}
           styleIconLeft={{ height: "30px", width: "30px" }}
           onClick={() => {
+            if (templateInteractividad) {
+              setImage("");
+              setEndVideoInteractive(false);
+            }
             setEndTime(false);
             setPlaying(true);
             setState({ ...state, played: 0 });
@@ -347,7 +306,7 @@ const Video = ({
               onBuffer={() => setIsLoadingBuffer(true)}
               onBufferEnd={() => setIsLoadingBuffer(false)}
             />
-            {hasInteractivity && (
+            {templateInteractividad && (
               <ControlsInteractive
                 ref={controlsRef}
                 playing={playing}
@@ -361,10 +320,10 @@ const Video = ({
               />
             )}
 
-            {!hasInteractivity && (
+            {!templateInteractividad && (
               <Controls
                 controlsRef={controlsRef}
-                showControlsPlayer={!hasInteractivity}
+                showControlsPlayer={!templateInteractividad}
                 title={title}
                 playing={playing}
                 muted={muted}
@@ -380,26 +339,62 @@ const Video = ({
                 }
               />
             )}
-            {hasInteractivity && endVideoInteractive && (
-              <ContainerInteractivity flexDirection="row">
-                <FirstContentInteractivity>
-                  <div style={{ display: "flex", flex: 1 }}></div>
-                  <div style={{ display: "flex", flex: 1 }}></div>
-                  <ButtonInteractive
-                    style={{ justifyContent: "flex-end" }}
-                    onClick={onClickFirst}
-                  ></ButtonInteractive>
-                </FirstContentInteractivity>
-                <SecondContentInteractivity>
-                  <div style={{ display: "flex", flex: 1 }}></div>
-                  <div style={{ display: "flex", flex: 1 }}></div>
-                  <ButtonInteractive
-                    style={{ justifyContent: "flex-start" }}
-                    onClick={onClickSecond}
-                  ></ButtonInteractive>
-                </SecondContentInteractivity>
-              </ContainerInteractivity>
-            )}
+
+            {templateInteractividad &&
+              endVideoInteractive &&
+              templateInteractividad === "template1" && (
+                <Template1
+                  onClickFirst={() => onClickCTA(ctas[`cta1`])}
+                  onClickSecond={() => onClickCTA(ctas[`cta2`])}
+                />
+              )}
+
+            {templateInteractividad &&
+              endVideoInteractive &&
+              templateInteractividad === "template2" && (
+                <Template2
+                  src={image}
+                  onClickFirst={() => setImage(ctas[`cta1`])}
+                  onClickSecond={() => setImage(ctas[`cta2`])}
+                  onClickThird={() => setImage(ctas[`cta3`])}
+                />
+              )}
+
+            {templateInteractividad &&
+              endVideoInteractive &&
+              templateInteractividad === "template3" && (
+                <Template3
+                  onClickFirst={() => onClickCTA(ctas[`cta1`])}
+                  onClickSecond={() => onClickCTA(ctas[`cta2`])}
+                  onClickThird={() => onClickCTA(ctas[`cta3`])}
+                />
+              )}
+
+            {templateInteractividad &&
+              endVideoInteractive &&
+              templateInteractividad === "template4" && (
+                <Template4
+                  src={image}
+                  onClickFirst={() => setImage(ctas[`cta1`])}
+                  onClickSecond={() => setImage(ctas[`cta2`])}
+                />
+              )}
+
+            {templateInteractividad &&
+              endVideoInteractive &&
+              templateInteractividad === "template5" && (
+                <Template5
+                  src={image}
+                  onClickFirst={() => setImage(ctas[`cta1`])}
+                  onClickSecond={() => setImage(ctas[`cta2`])}
+                  onClickThird={() => setImage(ctas[`cta3`])}
+                  onClickFourth={() => setImage(ctas[`cta4`])}
+                  onClickFifth={() => setImage(ctas[`cta5`])}
+                  onClickSixth={() => setImage(ctas[`cta6`])}
+                  onClickSeventh={() => setImage(ctas[`cta7`])}
+                />
+              )}
+
             {delayToFinalizeVideo > 0 && endTime && !playing && (
               <ContainerLoading>
                 <div
@@ -438,6 +433,8 @@ Video.propTypes = {
   delayToFinalizeVideo: PropTypes.number,
   onInitTimer: PropTypes.func,
   onClickNextVideo: PropTypes.func,
+  ctas: PropTypes.object,
+  onClickCTA: PropTypes.func,
 };
 
 Video.defaultProps = {};

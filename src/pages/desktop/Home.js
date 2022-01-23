@@ -244,39 +244,11 @@ const Home = () => {
     });
   };
 
-  const onClickFirst = () => {
+  const onClickCTA = (idVideo) => {
 
     const find = {
-      index: videoSelected?.index + 1,
-      item: lessons[videoSelected?.index + 1],
-    };
-
-    setDisabledButton(
-      lessons?.find((item) => item.completoVista !== "SI") ? true : false
-    );
-    if (videoSelected.index !== -1) {
-      setSeek(0);
-      setVideoSelected(find);
-      isPlay = true;
-      isSelectedVideo = true;
-      setPlaying(true);
-    }
-  };
-
-  const onClickSecond = () => {
-    /*const firstIndex = lessons.findIndex(item => item.ultimoMinutoVisto === null);
-    const currentIndex = videoSelected.index + 1;
-
-    if(firstIndex === currentIndex) {
-
-    } else {
-      const max = Math.max(firstIndex, currentIndex);
-      const min = Math.min(firstIndex, currentIndex)
-    }*/
-
-    const find = {
-      index: 19,
-      item: lessons[19],
+      index: lessons.findIndex(item => item.idVideo === idVideo), //videoSelected?.index + 1,
+      item: lessons.find(item => item.idVideo === idVideo),
     };
 
     setDisabledButton(
@@ -324,8 +296,7 @@ const Home = () => {
                   onPlay={handleOnPlay}
                   onEnded={handleOnEnded}
                   onEndedVideoInteractive={handleOnEndedVideoInteractive}
-                  onClickFirst={onClickFirst}
-                  onClickSecond={onClickSecond}
+                  onClickCTA={onClickCTA}
                   onInitTimer={handleOnInitTimer}
                   onClickNextVideo={onClickNextVideo}
                   isLoadingVideo={isLoading}
@@ -334,7 +305,8 @@ const Home = () => {
                   }
                   delayToFinalizeVideo={!isSelectedVideo ? 0 : 5}
                   title={videoSelected?.item?.nombreVideo || ""}
-                  hasInteractivity={videoSelected?.index === 12}
+                  templateInteractividad={videoSelected?.item?.templateInteractividad}
+                  ctas={videoSelected?.item?.ctas ? JSON.parse(videoSelected?.item?.ctas): null}
                   lastMinuteSeen={videoSelected?.item?.ultimoMinutoVisto}
                 />
               </>
