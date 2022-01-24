@@ -223,12 +223,11 @@ const Video = ({
       count = 0;
     } else {
       if (controlsRef.current) controlsRef.current.style.display = "block";
-      count = 0;
-      /*if (controlsRef.current) {
+      if (controlsRef.current) {
         if (endVideoInteractive) controlsRef.current.style.display = "none";
         else controlsRef.current.style.display = "block";
       }
-      count = 0;*/
+      count = 0;
     }
   };
 
