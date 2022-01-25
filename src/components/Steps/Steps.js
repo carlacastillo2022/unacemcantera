@@ -146,6 +146,7 @@ const Steps = ({
     return (
       <Content
         key={index}
+        onClick={() => onClick(index, item)}
         height={index === 0 ? 81 : 97}
         background={index === videoSelected?.index ? "#f3f3f3" : "#fafafa"}
         style={{
@@ -161,7 +162,6 @@ const Steps = ({
             <VerticalBar height={index === 0 ? 49 : 45} />
           )}
         </ContentLeft>
-        <StyledLock src={Lock} />
         <ContentRight
           style={{
             marginTop: index > 0 ? 20 : 0,
@@ -242,7 +242,7 @@ const Steps = ({
         </ContainerProgress>
         <Container>
           {lessons.map((item, index) => {
-            if (isCompleted || !isCompleted) {
+            if (isCompleted) {
               isCompleted = item?.completoVista
                 ? item?.completoVista === "SI"
                 : item?.completoVista;
