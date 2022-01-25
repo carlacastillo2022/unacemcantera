@@ -153,9 +153,11 @@ const Video = ({
       setEndTime(false);
     }
     if (!playing && templateInteractividad) setImage("");
-    //if (!templateInteractividad)
-    if (controlsRef.current)
-      controlsRef.current.style.display = !playing ? "block" : "none";
+    
+    if (!templateInteractividad) {
+      if (controlsRef.current)
+        controlsRef.current.style.display = !playing ? "block" : "none";
+    }
   }, [playing]);
 
   const handlePlayPause = () => {
