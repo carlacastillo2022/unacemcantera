@@ -166,6 +166,10 @@ const Steps = ({
           style={{
             marginTop: index > 0 ? 20 : 0,
           }}
+          style={{
+            marginTop: index > 0 ? 20 : 0,
+            marginLeft: "18px",
+          }}
         >
           <Title>{item.nombreVideo}</Title>
           <Description>{`Duración: ${item.duracion}/ Video`}</Description>
