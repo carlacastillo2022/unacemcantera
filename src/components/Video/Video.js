@@ -151,7 +151,6 @@ const Video = ({
     setKey(playing ? "playing" : "stop");
     if (playing) {
       setEndTime(false);
-      setEndVideoInteractive(false);
     }
     if (!playing && templateInteractividad) setImage("");
     //if (!templateInteractividad)
@@ -173,6 +172,8 @@ const Video = ({
 
   const handleOnProgress = (changeState) => {
     if (playing) {
+      if (endVideoInteractive) setEndVideoInteractive(false);
+
       if (count > 2) {
         if (controlsRef.current) controlsRef.current.style.display = "none";
         count = 0;
