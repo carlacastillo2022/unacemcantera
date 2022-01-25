@@ -195,6 +195,7 @@ const Video = ({
       onInitTimer && onInitTimer();
     } else {
       setEndVideoInteractive(true);
+      controlsRef.current.style.display = "none";
       onEndedVideoInteractive &&
         onEndedVideoInteractive(playerRef.current.getDuration());
     }
