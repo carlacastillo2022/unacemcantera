@@ -151,6 +151,7 @@ const Video = ({
     setKey(playing ? "playing" : "stop");
     if (playing) {
       setEndTime(false);
+      setEndVideoInteractive(false);
     }
     if (!playing && templateInteractividad) setImage("");
     //if (!templateInteractividad)
