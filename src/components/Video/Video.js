@@ -227,7 +227,6 @@ const Video = ({
       if (controlsRef.current) controlsRef.current.style.display = "block";
       count = 0;
     } else {
-      if (controlsRef.current) controlsRef.current.style.display = "block";
       if (controlsRef.current) {
         if (endVideoInteractive) controlsRef.current.style.display = "none";
         else controlsRef.current.style.display = "block";
