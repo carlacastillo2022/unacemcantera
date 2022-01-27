@@ -42,9 +42,9 @@ const ContainerLoading = styled.div`
 const Description = styled.span`
   font-size: 14px;
   line-height: 20px;
-  color: #333333;
+  color: #ffffff;
   font-family: ${({ theme }) => theme.fonts.mainFont};
-  margin-top: 20px;
+  margin-top: 5px;
 `;
 
 const format = (seconds) => {
@@ -153,7 +153,7 @@ const Video = ({
       setEndTime(false);
     }
     if (!playing && templateInteractividad) setImage("");
-    
+
     if (!templateInteractividad) {
       if (controlsRef.current)
         controlsRef.current.style.display = !playing ? "block" : "none";
@@ -440,23 +440,31 @@ const Video = ({
             {delayToFinalizeVideo > 0 && endTime && !playing && (
               <ContainerLoading>
                 <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    marginTop: "19px",
+                  }}
                   onClick={() => {
                     setEndTime(false);
                   }}
                 >
-                  <CountdownCircleTimer
-                    size={50}
-                    strokeWidth={8}
-                    isPlaying
-                    duration={delayToFinalizeVideo}
-                    colors={["#FFFFFF"]}
-                    onComplete={handleOnComplete}
-                  >
-                    {({ remainingTime }) => <></>}
-                  </CountdownCircleTimer>
+                  <>
+                    <CountdownCircleTimer
+                      size={50}
+                      strokeWidth={8}
+                      isPlaying
+                      duration={delayToFinalizeVideo}
+                      colors={["#FFFFFF"]}
+                      onComplete={handleOnComplete}
+                    />
+                    <Description>Cargando proximo video...</Description>
+                  </>
                 </div>
               </ContainerLoading>
             )}
+
             {isLoadingVideo ||
               (isLoadingBuffer && (
                 <ContainerLoading>
