@@ -79,7 +79,13 @@ const Certificate = () => {
     <>
       <Link
         onClick={() => {
-          history.goBack();
+          history.replace({
+            pathname: "/lessons",
+            state: {
+              token,
+              idCurso
+            },
+          });
         }}
       >
         <img src={ArrowDoubleLeft} /> <span>Volver</span>

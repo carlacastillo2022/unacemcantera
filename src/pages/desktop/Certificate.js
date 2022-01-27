@@ -43,11 +43,11 @@ const ContentRight = styled.div`
 `;
 
 const Certificate = () => {
-  const location = useLocation();
+  const locationRoute = useLocation();
   const history = useHistory();
 
-  const token = location?.state?.token;
-  const idCurso = location?.state?.idCurso;
+  const token = locationRoute?.state?.token;
+  const idCurso = locationRoute?.state?.idCurso;
   const [valueInput, setValueInput] = useState("");
   const [isDisabledButton, setIsDisabledButton] = useState(true);
   const { fetch: fetchSendEmail, data: dataEmail } = useFetchEmail();
@@ -95,7 +95,13 @@ const Certificate = () => {
     <>
       <Link
         onClick={() => {
-          history.goBack();
+          history.replace({
+            pathname: "/",
+            state: {
+              token,
+              idCurso
+            },
+          });
         }}
       >
         <img src={ArrowDoubleLeft} /> <span>Volver</span>

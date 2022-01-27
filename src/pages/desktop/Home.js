@@ -7,7 +7,7 @@ import {
   useFetchQuestions,
 } from "@hooks/useCourses";
 import { StringParam, useQueryParam } from "use-query-params";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import Link from "@components/Link";
 import Button from "@components/Button";
@@ -71,6 +71,8 @@ let isEnd = false;
 
 const Home = () => {
   const history = useHistory();
+  const location = useLocation();
+
   const [token, setToken] = useQueryParam("token", StringParam);
   const [idCurso, setIdCurso] = useQueryParam("idCurso", StringParam);
 
@@ -96,8 +98,12 @@ const Home = () => {
   }, [videoSelected]);
 
   useEffect(() => {
-    fetchCourse(token, idCurso);
-    fetchVideoByCourse(token, idCurso);
+    if(location.state?.token) setToken(location.state?.token)
+    if(location.state?.idCurso) setIdCurso(location.state?.idCurso)
+    const token_ = token || location.state?.token;
+    const idCurso_ = idCurso || location.state?.idCurso;
+    fetchCourse(token_, idCurso_);
+    fetchVideoByCourse(token_, idCurso_);
   }, []);
 
   useEffect(() => {

@@ -43,7 +43,6 @@ const Lesson = () => {
 
   const token = location?.state?.token;
   const idCurso = location?.state?.idCurso;
-  const nombreCurso = location?.state?.nombreCurso;
 
   const { fetch: fetchVideoByCourse, data: dataLessons } = useFetchLessons();
   const { fetch: fetchTracking, data: dataTracking } = useFetchTracking();
