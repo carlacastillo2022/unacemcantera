@@ -100,21 +100,24 @@ const QuickQuestionary = ({
                 index + 1 < 9 ? `0${index + 1}` : `${index + 1}`
               }.- ${item?.pregunta}`}</Title>
               {item.alternativas &&
-                item.alternativas.map((item_, index_) => (
-                  <Alternative
-                    key={`a${index_}`}
-                    onClick={() => onSelectedAlternative(index, index_)}
-                  >
-                    {item_?.respuesta ? (
-                      <img src={RadioSelected} />
-                    ) : (
-                      <img src={RadioNormal} />
-                    )}
-                    <Paragraph style={{ marginLeft: "4px" }}>
-                      {item_?.alternativa}
-                    </Paragraph>
-                  </Alternative>
-                ))}
+                item.alternativas.map(
+                  (item_, index_) =>
+                    item_?.alternativa && (
+                      <Alternative
+                        key={`a${index_}`}
+                        onClick={() => onSelectedAlternative(index, index_)}
+                      >
+                        {item_?.respuesta ? (
+                          <img src={RadioSelected} />
+                        ) : (
+                          <img src={RadioNormal} />
+                        )}
+                        <Paragraph style={{ marginLeft: "4px" }}>
+                          {item_?.alternativa}
+                        </Paragraph>
+                      </Alternative>
+                    )
+                )}
             </div>
           ))}
         <div
