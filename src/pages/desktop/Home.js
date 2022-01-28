@@ -381,6 +381,7 @@ const Home = () => {
             disabledClose
             videoSelected={videoSelected}
             onCallbackVideoSelected={(item, index) => {
+              setQuestionary([]);
               isPlay = true;
               setSeek(0);
               setIsSelectedVideo(true);

@@ -270,6 +270,7 @@ const Lesson = () => {
           lessons={lessons}
           videoSelected={videoSelected}
           onCallbackVideoSelected={(item, index) => {
+            setQuestionary([]);
             videoContainer.current.scrollIntoView({ behavior: "smooth" });
             setVideoSelected({
               item,
