@@ -95,16 +95,11 @@ const Certificate = () => {
     <>
       <Link
         onClick={() => {
-          history.replace({
-            pathname: "/",
-            state: {
-              token,
-              idCurso
-            },
-          });
+          window.parent.location.href =
+            "https://unacemcantera.com.pe/capacitaciones/";
         }}
       >
-        <img src={ArrowDoubleLeft} /> <span>Volver</span>
+        <img src={ArrowDoubleLeft} /> <span>Ver todas las capacitaciones</span>
       </Link>
       <Content>
         <ContentLeft>
