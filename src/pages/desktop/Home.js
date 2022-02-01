@@ -179,8 +179,10 @@ const Home = () => {
 
   const handleOnProgress = (e) => {
     const currentTime = e.playedSeconds;
+    console.log("handleOnProgress", isPlay, isSelectedVideo)
     if (isPlay && isSelectedVideo) {
       if (currentTime > timeOutFetch) {
+        console.log("fetchTracking", currentTime)
         timeOutFetch = currentTime + timeOutFetch;
         fetchTracking(
           token,

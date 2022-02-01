@@ -183,8 +183,8 @@ const Video = ({
       }
       setState({ ...state, ...changeState });
       setLastMinuteSeenVideo(changeState.playedSeconds);
-      onProgress && onProgress(changeState);
     }
+    onProgress && onProgress(changeState);
   };
 
   const handleOnEnded = () => {
@@ -459,7 +459,7 @@ const Video = ({
                       colors={["#FFFFFF"]}
                       onComplete={handleOnComplete}
                     />
-                    <Description>Cargando proximo video...</Description>
+                    <Description>Cargando próximo video...</Description>
                   </>
                 </div>
               </ContainerLoading>
