@@ -123,8 +123,7 @@ const Home = () => {
 
   useEffect(() => {
     if (dataTrackingInteractive?.success && isEnd) {
-      isEnd = false;
-      fetchVideoByCourse(token, idCurso);
+      
     }
   }, [dataTrackingInteractive]);
 

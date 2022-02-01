@@ -93,6 +93,7 @@ const Video = ({
   const [widthVideo, setWidthVideo] = useState(width);
   const [heightVideo, setHeightVideo] = useState(height);
   const [isLoadingBuffer, setIsLoadingBuffer] = useState(false);
+  const [firstLoad, setFirstLoad] = useState(false);
   const [lastMinuteSeenVideo, setLastMinuteSeenVideo] = useState(seek);
   const fullScreenHandle = useFullScreenHandle();
   const [image, setImage] = useState();
@@ -120,6 +121,7 @@ const Video = ({
   }, [endVideoInteractive]);
 
   useEffect(() => {
+    setFirstLoad(true)
     if (templateInteractividad) {
       setImage("");
       setEndVideoInteractive(false);
@@ -150,6 +152,7 @@ const Video = ({
   useEffect(() => {
     setKey(playing ? "playing" : "stop");
     if (playing) {
+      setFirstLoad(false);
       setEndTime(false);
     }
     if (!playing && templateInteractividad) setImage("");
@@ -194,10 +197,13 @@ const Video = ({
       setEndTime(true);
       onInitTimer && onInitTimer();
     } else {
+      if(!firstLoad) {
+        console.log("primera car")
       setEndVideoInteractive(true);
       controlsRef.current.style.display = "none";
       onEndedVideoInteractive &&
         onEndedVideoInteractive(playerRef.current.getDuration());
+      }
     }
   };
 
