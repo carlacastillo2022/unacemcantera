@@ -95,6 +95,7 @@ const Home = () => {
 
   useEffect(() => {
     setSeek(videoSelected?.item?.ultimoMinutoVisto || 0);
+    timeOutFetch = 2;
   }, [videoSelected]);
 
   useEffect(() => {
@@ -198,7 +199,6 @@ const Home = () => {
   const handleOnPlay = () => {
     isEnd = false;
     isPlay = !playing;
-    timeOutFetch = 2;
     setPlaying(!playing);
   };
 
@@ -385,7 +385,6 @@ const Home = () => {
             videoSelected={videoSelected}
             onCallbackVideoSelected={(item, index) => {
               setQuestionary([]);
-              timeOutFetch = 2;
               isPlay = true;
               setSeek(0);
               setIsSelectedVideo(true);
