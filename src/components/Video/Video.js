@@ -121,13 +121,16 @@ const Video = ({
   }, [endVideoInteractive]);
 
   useEffect(() => {
-    setFirstLoad(true)
     if (templateInteractividad) {
       setImage("");
       setEndVideoInteractive(false);
     }
     try {
       if (playerRef && playerRef.current) {
+        if(      Math.trunc(lastMinuteSeenVideo) ===
+        Math.trunc(playerRef?.current?.getDuration())) {
+          setFirstLoad(false)
+        }
         setIsLoadingBuffer(true);
         playerRef.current.seekTo(seek);
         setState({ ...state, played: seek });
