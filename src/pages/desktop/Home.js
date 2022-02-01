@@ -385,6 +385,7 @@ const Home = () => {
             videoSelected={videoSelected}
             onCallbackVideoSelected={(item, index) => {
               setQuestionary([]);
+              timeOutFetch = 2;
               isPlay = true;
               setSeek(0);
               setIsSelectedVideo(true);
