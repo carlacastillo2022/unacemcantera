@@ -152,7 +152,7 @@ const Video = ({
   useEffect(() => {
     setKey(playing ? "playing" : "stop");
     if (playing) {
-      setFirstLoad(false);
+      setFirstLoad(true);
       setEndTime(false);
     }
     if (!playing && templateInteractividad) setImage("");
@@ -197,8 +197,8 @@ const Video = ({
       setEndTime(true);
       onInitTimer && onInitTimer();
     } else {
-      if(!firstLoad) {
-        console.log("primera car")
+      if(firstLoad) {
+        console.log("primera car11")
       setEndVideoInteractive(true);
       controlsRef.current.style.display = "none";
       onEndedVideoInteractive &&
