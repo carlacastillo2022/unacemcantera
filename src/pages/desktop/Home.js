@@ -216,8 +216,19 @@ const Home = () => {
     }
   };
 
-  const handleOnEndedVideoInteractive = () => {
-    setShowButtonsFooter(true);
+  const handleOnEndedVideoInteractive = (currentTime) => {
+    if (isPlay && isSelectedVideo) {
+      console.log("fetchTrackingInteractive")
+      isPlay = false;
+      isEnd = false;
+      fetchTracking(
+        token,
+        videoSelected?.item?.idCurso,
+        videoSelected?.item?.idVideo,
+        currentTime,
+        true
+      );
+    }
   };
 
   const onClickNextVideo = (currentTime) => {
