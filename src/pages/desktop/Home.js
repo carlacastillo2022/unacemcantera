@@ -90,6 +90,7 @@ const Home = () => {
 
   const { fetch: fetchVideoByCourse, data: dataLessons } = useFetchLessons();
   const { fetch: fetchTracking, data: dataTracking } = useFetchTracking();
+  const { fetch: fetchTrackingInteractive, data: dataTrackingInteractive } = useFetchTracking();
   const { fetch: fetchQuestions, data: dataQuestions } = useFetchQuestions();
   const { fetch: fetchCourse, data: dataInfoCourse } = useFetchCourse();
 
@@ -119,6 +120,13 @@ const Home = () => {
       setIsLoading(false);
     }
   }, [dataTracking]);
+
+  useEffect(() => {
+    if (dataTrackingInteractive?.success && isEnd) {
+      isEnd = false;
+      fetchVideoByCourse(token, idCurso);
+    }
+  }, [dataTrackingInteractive]);
 
   useEffect(() => {
     setIsLoading(false);
@@ -200,9 +208,7 @@ const Home = () => {
   };
 
   const handleOnEnded = (currentTime) => {
-    console.log("handleOnProgress", isPlay, isSelectedVideo)
     if (isPlay && isSelectedVideo) {
-      console.log("fetchTracking")
       isPlay = false;
       isEnd = true;
       setIsLoading(true);
@@ -217,17 +223,17 @@ const Home = () => {
   };
 
   const handleOnEndedVideoInteractive = (currentTime) => {
-    if (isPlay && isSelectedVideo) {
-      console.log("fetchTrackingInteractive")
+    if(isPlay && isSelectedVideo) {
+      console.log("fetchTracking handleOnEndedVideoInteractive")
       isPlay = false;
-      isEnd = false;
-      fetchTracking(
+      isEnd = true;
+      fetchTrackingInteractive(
         token,
         videoSelected?.item?.idCurso,
         videoSelected?.item?.idVideo,
         currentTime,
         true
-      );
+      )
     }
   };
 
