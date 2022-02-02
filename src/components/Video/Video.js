@@ -92,8 +92,7 @@ const Video = ({
   const [key, setKey] = useState("");
   const [widthVideo, setWidthVideo] = useState(width);
   const [heightVideo, setHeightVideo] = useState(height);
-  const [isLoadingBuffer, setIsLoadingBuffer] = useState(false);
-  const [firstLoad, setFirstLoad] = useState(false);
+  const [isLoadingBuffer, setIsLoadingBuffer] = useState(false); 
   const [lastMinuteSeenVideo, setLastMinuteSeenVideo] = useState(seek);
   const fullScreenHandle = useFullScreenHandle();
   const [image, setImage] = useState();
@@ -127,10 +126,6 @@ const Video = ({
     }
     try {
       if (playerRef && playerRef.current) {
-        if(      Math.trunc(lastMinuteSeenVideo) ===
-        Math.trunc(playerRef?.current?.getDuration())) {
-          setFirstLoad(false)
-        }
         setIsLoadingBuffer(true);
         playerRef.current.seekTo(seek);
         setState({ ...state, played: seek });
@@ -155,7 +150,6 @@ const Video = ({
   useEffect(() => {
     setKey(playing ? "playing" : "stop");
     if (playing) {
-      setFirstLoad(true);
       setEndTime(false);
     }
     if (!playing && templateInteractividad) setImage("");
@@ -199,14 +193,11 @@ const Video = ({
       setEnd(true);
       setEndTime(true);
       onInitTimer && onInitTimer();
-    } else {
-      if(firstLoad) {
-        console.log("primera car11")
+    } else { 
       setEndVideoInteractive(true);
       controlsRef.current.style.display = "none";
       onEndedVideoInteractive &&
         onEndedVideoInteractive(playerRef.current.getDuration());
-      }
     }
   };
 

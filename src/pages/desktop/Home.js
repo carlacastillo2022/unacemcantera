@@ -90,7 +90,8 @@ const Home = () => {
 
   const { fetch: fetchVideoByCourse, data: dataLessons } = useFetchLessons();
   const { fetch: fetchTracking, data: dataTracking } = useFetchTracking();
-  const { fetch: fetchTrackingInteractive, data: dataTrackingInteractive } = useFetchTracking();
+  const { fetch: fetchTrackingInteractive, data: dataTrackingInteractive } =
+    useFetchTracking();
   const { fetch: fetchQuestions, data: dataQuestions } = useFetchQuestions();
   const { fetch: fetchCourse, data: dataInfoCourse } = useFetchCourse();
 
@@ -100,8 +101,8 @@ const Home = () => {
   }, [videoSelected]);
 
   useEffect(() => {
-    if(location.state?.token) setToken(location.state?.token)
-    if(location.state?.idCurso) setIdCurso(location.state?.idCurso)
+    if (location.state?.token) setToken(location.state?.token);
+    if (location.state?.idCurso) setIdCurso(location.state?.idCurso);
     const token_ = token || location.state?.token;
     const idCurso_ = idCurso || location.state?.idCurso;
     fetchCourse(token_, idCurso_);
@@ -123,7 +124,6 @@ const Home = () => {
 
   useEffect(() => {
     if (dataTrackingInteractive?.success && isEnd) {
-      
     }
   }, [dataTrackingInteractive]);
 
@@ -160,7 +160,9 @@ const Home = () => {
           }
         }
         setDisabledButton(
-          data?.find((item) => item.completoVista !== "SI") ? true : false
+          data?.find((item) => parseFloat(item.ultimoMinutoVisto || 0) <= 0)
+            ? true
+            : false
         );
         const sumDurations_ = sumDurations(dataLessons?.data);
         setDuration(sumDurations_.formatted);
@@ -177,7 +179,9 @@ const Home = () => {
           item: data[data.length - 1],
         };
         setDisabledButton(
-          data?.find((item) => item.completoVista !== "SI") ? true : false
+          data?.find((item) => parseFloat(item.ultimoMinutoVisto || 0) <= 0)
+            ? true
+            : false
         );
         setVideoSelected(find);
         setPlaying(false);
@@ -222,8 +226,7 @@ const Home = () => {
   };
 
   const handleOnEndedVideoInteractive = (currentTime) => {
-    if(isPlay && isSelectedVideo) {
-      console.log("fetchTracking handleOnEndedVideoInteractive")
+    if (isPlay && isSelectedVideo) {
       isPlay = false;
       isEnd = true;
       fetchTrackingInteractive(
@@ -232,7 +235,7 @@ const Home = () => {
         videoSelected?.item?.idVideo,
         currentTime,
         true
-      )
+      );
     }
   };
 
@@ -277,7 +280,9 @@ const Home = () => {
       item: lessons.find((item) => item.idVideo === idVideo),
     };
     setDisabledButton(
-      lessons?.find((item) => item.completoVista !== "SI") ? true : false
+      lessons?.find((item) => parseFloat(item.ultimoMinutoVisto || 0) <= 0)
+        ? true
+        : false
     );
     if (videoSelected.index !== -1) {
       setSeek(0);

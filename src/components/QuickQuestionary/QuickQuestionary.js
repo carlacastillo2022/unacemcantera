@@ -99,7 +99,6 @@ const QuickQuestionary = ({
   };
 
   if (showSuccessResponse) {
-    console.log("showSuccessResponse ", responses);
     return (
       <Content>
         <div
