@@ -85,13 +85,10 @@ const Home = () => {
   const [videoSelected, setVideoSelected] = useState({ item: null, index: -1 });
   const [duration, setDuration] = useState();
   const [questionary, setQuestionary] = useState([]);
-  const [showButtonsFooter, setShowButtonsFooter] = useState(false);
   const [seek, setSeek] = useState(0);
 
   const { fetch: fetchVideoByCourse, data: dataLessons } = useFetchLessons();
   const { fetch: fetchTracking, data: dataTracking } = useFetchTracking();
-  const { fetch: fetchTrackingInteractive, data: dataTrackingInteractive } =
-    useFetchTracking();
   const { fetch: fetchQuestions, data: dataQuestions } = useFetchQuestions();
   const { fetch: fetchCourse, data: dataInfoCourse } = useFetchCourse();
 
@@ -123,11 +120,6 @@ const Home = () => {
   }, [dataTracking]);
 
   useEffect(() => {
-    if (dataTrackingInteractive?.success && isEnd) {
-    }
-  }, [dataTrackingInteractive]);
-
-  useEffect(() => {
     setIsLoading(false);
     if (dataQuestions?.success) {
       if (dataQuestions?.data?.length > 0) {
@@ -139,6 +131,7 @@ const Home = () => {
   }, [dataQuestions]);
 
   useEffect(() => {
+    setIsLoading(false);
     if (dataLessons && dataLessons?.success) {
       const data = dataLessons?.data;
       setLessons(data);
@@ -226,17 +219,14 @@ const Home = () => {
   };
 
   const handleOnEndedVideoInteractive = (currentTime) => {
-    if (isPlay && isSelectedVideo) {
-      isPlay = false;
-      isEnd = true;
-      fetchTrackingInteractive(
-        token,
-        videoSelected?.item?.idCurso,
-        videoSelected?.item?.idVideo,
-        currentTime,
-        true
-      );
-    }
+    isEnd = false;
+    fetchTracking(
+      token,
+      videoSelected?.item?.idCurso,
+      videoSelected?.item?.idVideo,
+      currentTime,
+      true
+    );
   };
 
   const onClickNextVideo = (currentTime) => {
@@ -254,13 +244,21 @@ const Home = () => {
   };
 
   const onFinished = () => {
+    setIsLoading(true);
     setQuestionary([]);
     fetchVideoByCourse(token, videoSelected?.item?.idCurso);
   };
 
   const handleOnInitTimer = () => {
+    isEnd = false;
     setPlaying(false);
-    setShowButtonsFooter(true);
+    fetchTracking(
+      token,
+      videoSelected?.item?.idCurso,
+      videoSelected?.item?.idVideo,
+      currentTime,
+      true
+    );
   };
 
   const onClickQuestionary = () => {

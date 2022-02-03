@@ -192,7 +192,7 @@ const Video = ({
       setPlaying(false);
       setEnd(true);
       setEndTime(true);
-      onInitTimer && onInitTimer();
+      onInitTimer && onInitTimer(playerRef.current.getDuration());
     } else { 
       setEndVideoInteractive(true);
       controlsRef.current.style.display = "none";

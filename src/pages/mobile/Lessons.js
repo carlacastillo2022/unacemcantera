@@ -38,7 +38,6 @@ const Lesson = () => {
   const [videoSelected, setVideoSelected] = useState({ item: null, index: -1 });
   const [questionary, setQuestionary] = useState([]);
   const [playing, setPlaying] = useState(false);
-  const [showButtonsFooter, setShowButtonsFooter] = useState(false);
   const [seek, setSeek] = useState(0);
 
   const token = location?.state?.token;
@@ -81,6 +80,7 @@ const Lesson = () => {
   }, [dataQuestions]);
 
   useEffect(() => {
+    setIsLoading(false);
     if (dataLessons?.success) {
       const data = dataLessons?.data;
       setLessons(data);
@@ -125,6 +125,7 @@ const Lesson = () => {
   }, [dataLessons]);
 
   const onFinished = () => {
+    setIsLoading(true);
     setQuestionary([]);
     fetchVideoByCourse(token, idCurso);
   };
@@ -176,9 +177,27 @@ const Lesson = () => {
     }
   };
 
-  const handleOnInitTimer = () => {
+  const handleOnInitTimer = (currentTime) => {
+    isEnd = false;
     setPlaying(false);
-    setShowButtonsFooter(true);
+    fetchTracking(
+      token,
+      videoSelected?.item?.idCurso,
+      videoSelected?.item?.idVideo,
+      currentTime,
+      true
+    );
+  };
+
+  const handleOnEndedVideoInteractive = (currentTime) => {
+    isEnd = false;
+    fetchTracking(
+      token,
+      videoSelected?.item?.idCurso,
+      videoSelected?.item?.idVideo,
+      currentTime,
+      true
+    );
   };
 
   const onClickNextVideo = (currentTime) => {
@@ -233,6 +252,7 @@ const Lesson = () => {
             onProgress={handleOnProgress}
             onPlay={handleOnPlay}
             onEnded={handleOnEnded}
+            onEndedVideoInteractive={handleOnEndedVideoInteractive}
             onInitTimer={handleOnInitTimer}
             onClickNextVideo={onClickNextVideo}
             onClickCTA={onClickCTA}
