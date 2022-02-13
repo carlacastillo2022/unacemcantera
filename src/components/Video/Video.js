@@ -12,6 +12,8 @@ import Template2 from "./components/Interactivity/Template2";
 import Template3 from "./components/Interactivity/Template3";
 import Template4 from "./components/Interactivity/Template4";
 import Template5 from "./components/Interactivity/Template5";
+import Template6 from "./components/Interactivity/Template6";
+import Template7 from "./components/Interactivity/Template7";
 import ArrowDoubleRight from "@assets/images/arrow-double-right.svg";
 import ArrowDoubleLeftWhite from "@assets/images/arrow-double-left-white.svg";
 import ArrowReplay from "@assets/images/arrow-replay.svg";
@@ -114,6 +116,7 @@ const Video = ({
     cancelSubscriptions();
     setKey(src)
     setEndVideo(false);
+    setImageInteractivity(null)
     if(actionBackButton.idNextVideo !== videoSelected?.item?.idVideo) {
       setActionBackButton({
         video: null,
@@ -405,6 +408,46 @@ const Video = ({
                 </div>
               </ContainerLoading>
             )}
+
+            {templateInteractivity &&
+              endVideo &&
+              templateInteractivity === "template6" && (
+                <Template6
+                  src={imageInteractivity}
+                  onClickFirst={() =>
+                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
+                  }
+                  onClickSecond={() =>
+                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
+                  }
+                />
+              )}
+
+            {templateInteractivity &&
+              endVideo &&
+              templateInteractivity === "template7" && (
+                <Template7
+                  src={imageInteractivity}
+                  onClickFirst={() =>
+                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
+                  }
+                  onClickSecond={() =>
+                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
+                  }
+                  onClickThird={() =>
+                    setImageInteractivity(ctas[`cta3`], playerRef?.current?.getDuration())
+                  }
+                  onClickFourth={() =>
+                    setImageInteractivity(ctas[`cta4`], playerRef?.current?.getDuration())
+                  }
+                  onClickFifth={() =>
+                    setImageInteractivity(ctas[`cta5`], playerRef?.current?.getDuration())
+                  }
+                  onClickSixth={() =>
+                    setImageInteractivity(ctas[`cta6`], playerRef?.current?.getDuration())
+                  }
+                />
+              )}
 
             {isLoadingBuffer && (
                 <ContainerLoading>
