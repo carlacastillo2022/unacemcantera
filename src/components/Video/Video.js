@@ -378,7 +378,7 @@ const Video = ({
                 />
               )}
 
-            {endVideo && !templateInteractivity && !cancelTimeCounter && (
+            {showButtonsFooter && endVideo && !templateInteractivity && !cancelTimeCounter && (
               <ContainerLoading>
                 <div
                   style={{
