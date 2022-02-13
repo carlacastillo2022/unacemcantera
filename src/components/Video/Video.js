@@ -158,7 +158,7 @@ const Video = ({
     setPlayed(changeState.played);
     if (timerForProgress > 2) {
       timerForProgress = 0;
-      onProgress(changeState);
+      onProgress && onProgress(changeState);
     } else {
       timerForProgress += 1;
     }
