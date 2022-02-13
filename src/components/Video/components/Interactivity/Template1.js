@@ -42,7 +42,7 @@ const ButtonInteractiveRight = styled.button`
   transition: background-color 0.8s;
   cursor: pointer;
   &:active {
-    background: linear-gradient(to right, #f3f3f3, transparent);
+    background-color: rgb(239, 239, 239, 0.6);
     background-size: 100%;
     transition: background 0s;
   }
@@ -60,7 +60,7 @@ const ButtonInteractiveLeft = styled.button`
   transition: background-color 0.8s;
   cursor: pointer;
   &:active {
-    background: linear-gradient(to left, #f3f3f3, transparent);
+    background-color: rgb(239, 239, 239, 0.6);
     background-size: 100%;
     transition: background 0s;
   }

@@ -23,10 +23,6 @@ const Paragraph = styled.p`
   font-family: ${({ theme }) => theme.fonts.mainFont};
 `;
 
-let timeOutFetch = 2;
-let isPlay = false;
-let isEnd = false;
-
 const Lesson = () => {
   const videoContainer = useRef(null);
 
@@ -44,7 +40,7 @@ const Lesson = () => {
   const idCurso = location?.state?.idCurso;
 
   const { fetch: fetchVideoByCourse, data: dataLessons } = useFetchLessons();
-  const { fetch: fetchTracking, data: dataTracking } = useFetchTracking();
+  const { fetch: fetchTracking } = useFetchTracking();
   const { fetch: fetchQuestions, data: dataQuestions } = useFetchQuestions();
 
   useEffect(() => {
@@ -54,19 +50,6 @@ const Lesson = () => {
   useEffect(() => {
     fetchVideoByCourse(token, idCurso);
   }, []);
-
-  useEffect(() => {
-    if (dataTracking?.success && isEnd) {
-      isEnd = false;
-      setIsLoading(true);
-      fetchQuestions(
-        token,
-        videoSelected?.item?.idCurso,
-        videoSelected?.item?.idVideo
-      );
-      //fetchVideoByCourse(token, idCurso);
-    }
-  }, [dataTracking]);
 
   useEffect(() => {
     setIsLoading(false);
@@ -104,13 +87,9 @@ const Lesson = () => {
         setDisabledButton(
           data?.find((item) => item.completoVista !== "SI") ? true : false
         );
-
-        setSeek(0);
         setVideoSelected(find);
-        isPlay = true;
         setPlaying(true);
       } else {
-        isPlay = false;
         const find = {
           index: data.length - 1,
           item: data[data.length - 1],
@@ -143,30 +122,16 @@ const Lesson = () => {
 
   const handleOnProgress = (e) => {
     const currentTime = e.playedSeconds;
-    if (isPlay) {
-      if (currentTime > timeOutFetch) {
-        timeOutFetch = currentTime + timeOutFetch;
-        fetchTracking(
-          token,
-          videoSelected?.item?.idCurso,
-          videoSelected?.item?.idVideo,
-          currentTime
-        );
-      }
-    }
-  };
-
-  const handleOnPlay = () => {
-    isEnd = false;
-    isPlay = !playing;
-    timeOutFetch = 2;
-    setPlaying(!playing);
+    fetchTracking(
+      token,
+      videoSelected?.item?.idCurso,
+      videoSelected?.item?.idVideo,
+      currentTime
+    );
   };
 
   const handleOnEnded = (currentTime) => {
-    if (isPlay) {
-      isPlay = false;
-      isEnd = true;
+    if(videoSelected?.item?.templateInteractividad) { 
       fetchTracking(
         token,
         videoSelected?.item?.idCurso,
@@ -177,41 +142,34 @@ const Lesson = () => {
     }
   };
 
-  const handleOnInitTimer = (currentTime) => {
-    isEnd = false;
-    setPlaying(false);
-    fetchTracking(
-      token,
-      videoSelected?.item?.idCurso,
-      videoSelected?.item?.idVideo,
-      currentTime,
-      true
-    );
-  };
-
-  const handleOnEndedVideoInteractive = (currentTime) => {
-    isEnd = false;
-    fetchTracking(
-      token,
-      videoSelected?.item?.idCurso,
-      videoSelected?.item?.idVideo,
-      currentTime,
-      true
-    );
+  const handleOnEndedTimer = (currentTime) => { 
+    Promise.all([
+      fetchTracking(
+        token,
+        videoSelected?.item?.idCurso,
+        videoSelected?.item?.idVideo,
+        currentTime,
+        true
+      ),
+      fetchQuestions(
+        token,
+        videoSelected?.item?.idCurso,
+        videoSelected?.item?.idVideo
+      )
+    ])
   };
 
   const onClickNextVideo = (currentTime) => {
-    isPlay = false;
-    isEnd = true;
     setPlaying(false);
-    fetchTracking(
-      token,
-      videoSelected?.item?.idCurso,
-      videoSelected?.item?.idVideo,
-      currentTime,
-      true
-    );
+    fetchVideoByCourse(token, idCurso);
   };
+
+  const onClickPrevVideo = video => {
+    setQuestionary([]);
+    setIsSelectedVideo(true);
+    setVideoSelected(video);
+    setPlaying(true);
+  }
 
   const onClickCTA = (idVideo, currentTime) => {
     const find = {
@@ -222,9 +180,7 @@ const Lesson = () => {
       lessons?.find((item) => item.completoVista !== "SI") ? true : false
     );
     if (videoSelected.index !== -1) {
-      setSeek(0);
       setVideoSelected(find);
-      isPlay = true;
       setPlaying(true);
     }
   };
@@ -250,23 +206,21 @@ const Lesson = () => {
             seek={seek}
             src={`https://${videoSelected?.item?.rutaPublica}`}
             onProgress={handleOnProgress}
-            onPlay={handleOnPlay}
             onEnded={handleOnEnded}
-            onEndedVideoInteractive={handleOnEndedVideoInteractive}
-            onInitTimer={handleOnInitTimer}
+            onEndedTimer={handleOnEndedTimer}
             onClickNextVideo={onClickNextVideo}
+            onClickPrevVideo={onClickPrevVideo}
             onClickCTA={onClickCTA}
             isLoadingVideo={isLoading}
             showButtonsFooter
             delayToFinalizeVideo={5}
-            title={videoSelected?.item?.nombreVideo || ""}
-            templateInteractividad={videoSelected?.item?.templateInteractividad}
+            templateInteractivity={videoSelected?.item?.templateInteractividad}
             ctas={
               videoSelected?.item?.ctas
                 ? JSON.parse(videoSelected?.item?.ctas)
                 : null
             }
-            lastMinuteSeen={videoSelected?.item?.ultimoMinutoVisto}
+            videoSelected={videoSelected}
           />
         ) : questionary?.length > 0 ? (
           <QuickQuestionary

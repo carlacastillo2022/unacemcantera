@@ -14,13 +14,15 @@ import {
 
 const IconButton = styled.button`
   border: 0px;
+  border-radius: 5px;
   background-color: transparent;
   color: #ffffff;
   position: relative;
   background-position: center;
-  transition: background-color 0.8s;
+  transition: background 0.8s;
+  cursor: pointer;
   &:active {
-    background: linear-gradient(to right, #c7c7c7, #efefef);
+    background-color: rgb(239, 239, 239, 0.6);
     background-size: 100%;
     transition: background 0s;
   }
@@ -136,78 +138,100 @@ const DescriptionDuration = styled.div`
   }
 `;
 
+const format = (seconds) => {
+  if (!seconds) {
+    return `00:00`;
+  }
+  const date = new Date(seconds * 1000);
+  const hh = date.getUTCHours();
+  const mm = date.getUTCMinutes();
+  const ss = date.getUTCSeconds().toString().padStart(2, "0");
+  if (hh) {
+    return `${hh}:${mm.toString().padStart(2, "0")}:${ss}`;
+  }
+  return `${mm}:${ss}`;
+};
+
 const Controls = ({
-  title,
-  isFullScreen,
-  muted,
+  controlsRef,
+  containerControlsRef,
+  currentTime,
+  duration,
   playing,
   played,
-  totalDuration,
-  elapsedTime,
-  onMute,
-  onPlayPause,
-  onChangeDispayFormat,
-  onToggleFullScreen,
+  muted,
+  isFullScreen,
   contentBottom,
-  controlsRef,
+  onPlayPause,
+  onMuted,
+  onToggleFullScreen
 }) => {
   const handleOnPlayPause = () => {
     onPlayPause && onPlayPause();
   };
 
+  const handleOnMuted = () => {
+    onMuted && onMuted();
+  }
+
+  const handleOnFullScreen = () => {
+    onToggleFullScreen && onToggleFullScreen();
+  }
+
+  const formatCurrentTime = format(currentTime);
+  const formatDuration = format(duration);
+
   return (
-    <Container playing={playing}>
+    <Container ref={containerControlsRef}>
       {!playing && (
         <Content style={{ flex: 1, position: "absolute", height: "100%" }}>
           <ContentMiddle>
-            {!playing && <img src={IconPlay} onClick={handleOnPlayPause}></img>}
+            <img src={IconPlay} onClick={handleOnPlayPause}></img>
           </ContentMiddle>
         </Content>
       )}
-
-      {
-        <Content style={{ flex: 1 }}>
-          <ContentMiddle></ContentMiddle>
-          <ContentBottom>
-            {contentBottom && (
-              <div style={{ width: "100%" }}>{contentBottom}</div>
-            )}
-            {playing && (
-              <div ref={controlsRef} style={{ width: "100%" }}>
-                <ContentProgress>
-                  <Progress seek={played * 100} />
-                </ContentProgress>
-                <ContentControls>
-                  <ControlsLeft>
-                    <IconButton onClick={handleOnPlayPause}>
-                      {!playing ? <MdPlayArrow /> : <MdPause />}
-                    </IconButton>
-                    <IconButton onClick={onMute}>
-                      {!muted ? <MdVolumeUp /> : <MdVolumeOff />}
-                    </IconButton>
-                    <DescriptionDuration onClick={onChangeDispayFormat}>
-                      <span>
-                        {elapsedTime}/{totalDuration}
-                      </span>
-                    </DescriptionDuration>
-                  </ControlsLeft>
-                  <ControlsRight>
-                    <IconButton onClick={onToggleFullScreen}>
-                      {!isFullScreen ? <MdFullscreen /> : <MdFullscreenExit />}
-                    </IconButton>
-                  </ControlsRight>
-                </ContentControls>
-              </div>
-            )}
-          </ContentBottom>
-        </Content>
-      }
+      <Content style={{ flex: 1 }}>
+        <ContentMiddle></ContentMiddle>
+        <ContentBottom>
+          {contentBottom && (
+            <div style={{ width: "100%" }}>{contentBottom}</div>
+          )}
+          {playing && (
+            <div ref={controlsRef} style={{ width: "100%" }}>
+              <ContentProgress>
+                <Progress seek={played * 100} />
+              </ContentProgress>
+              <ContentControls>
+                <ControlsLeft>
+                  <IconButton onClick={handleOnPlayPause}>
+                    {!playing ? <MdPlayArrow /> : <MdPause />}
+                  </IconButton>
+                  <IconButton onClick={handleOnMuted}>
+                    {!muted ? <MdVolumeUp /> : <MdVolumeOff />}
+                  </IconButton>
+                  <DescriptionDuration>
+                    <span>
+                      {formatCurrentTime}/{formatDuration}
+                    </span>
+                  </DescriptionDuration>
+                </ControlsLeft>
+                <ControlsRight>
+                  <IconButton onClick={handleOnFullScreen}>
+                    {!isFullScreen ? <MdFullscreen /> : <MdFullscreenExit />}
+                  </IconButton>
+                </ControlsRight>
+              </ContentControls>
+            </div>
+          )}
+        </ContentBottom>
+      </Content>
     </Container>
   );
 };
 
 Controls.propTypes = {
-  title: PropTypes.string,
+  containerControlsRef: PropTypes.object,
+  controlsRef: PropTypes.object,
   isFullScreen: PropTypes.bool,
   muted: PropTypes.bool,
   playing: PropTypes.bool,
@@ -215,10 +239,9 @@ Controls.propTypes = {
   totalDuration: PropTypes.string,
   elapsedTime: PropTypes.string,
   contentBottom: PropTypes.node,
-  onMute: PropTypes.func,
+  onMuted: PropTypes.func,
   onPlayPause: PropTypes.func,
   onToggleFullScreen: PropTypes.func,
-  onChangeDispayFormat: PropTypes.func,
 };
 
 export default Controls;

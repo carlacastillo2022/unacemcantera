@@ -12,11 +12,9 @@ import Template2 from "./components/Interactivity/Template2";
 import Template3 from "./components/Interactivity/Template3";
 import Template4 from "./components/Interactivity/Template4";
 import Template5 from "./components/Interactivity/Template5";
-import ControlsInteractive from "./components/ControlsInteractive";
 import ArrowDoubleRight from "@assets/images/arrow-double-right.svg";
+import ArrowDoubleLeftWhite from "@assets/images/arrow-double-left-white.svg";
 import ArrowReplay from "@assets/images/arrow-replay.svg";
-
-let count = 0;
 
 const ContainerButtonsFooter = styled.div`
   display: flex;
@@ -47,60 +45,51 @@ const Description = styled.span`
   margin-top: 5px;
 `;
 
-const format = (seconds) => {
-  if (isNaN(seconds)) {
-    return `00:00`;
-  }
-  const date = new Date(seconds * 1000);
-  const hh = date.getUTCHours();
-  const mm = date.getUTCMinutes();
-  const ss = date.getUTCSeconds().toString().padStart(2, "0");
-  if (hh) {
-    return `${hh}:${mm.toString().padStart(2, "0")}:${ss}`;
-  }
-  return `${mm}:${ss}`;
+let timeOutControlsBar = null;
+let timerForProgress = 0;
+
+const cancelSubscriptions = () => {
+  if(timeOutControlsBar)
+    clearTimeout(timeOutControlsBar)
 };
 
 const Video = ({
   width,
-  seek,
   height,
-  delayToFinalizeVideo,
   src,
-  onProgress,
-  onPlay,
-  onEnded,
-  onEndedVideoInteractive,
-  onInitTimer,
-  onClickNextVideo,
   playing,
-  isLoadingVideo,
-  title,
+  seek,
+  videoSelected,
+  templateInteractivity,
+  delayToFinalizeVideo,
   showButtonsFooter,
-  setPlaying,
-  templateInteractividad,
-  ctas,
+  onClickPrevVideo,
   onClickCTA,
+  onClickNextVideo,
+  onProgress,
+  onEnded,
+  onEndedTimer,
 }) => {
   const playerRef = useRef(null);
   const controlsRef = useRef(null);
+  const containerControlsRef = useRef(null);
 
-  const [timeDisplayFormat, setTimeDisplayFormat] = useState("normal");
-  const [end, setEnd] = useState(false);
-  const [endVideoInteractive, setEndVideoInteractive] = useState(false);
-  const [endTime, setEndTime] = useState(false);
-  const [key, setKey] = useState("");
   const [widthVideo, setWidthVideo] = useState(width);
   const [heightVideo, setHeightVideo] = useState(height);
-  const [isLoadingBuffer, setIsLoadingBuffer] = useState(false); 
-  const [lastMinuteSeenVideo, setLastMinuteSeenVideo] = useState(seek);
-  const fullScreenHandle = useFullScreenHandle();
-  const [image, setImage] = useState();
-  const [state, setState] = useState({
-    muted: false,
-    played: 0,
-    duration: 0,
+  const [isPlaying, setIsPlaying] = useState();
+  const [isMuted, setIsMuted] = useState();
+  const [played, setPlayed] = useState(0);
+  const [endVideo, setEndVideo] = useState(false);
+  const [actionBackButton, setActionBackButton] = useState({
+    video: null,
+    click: null,
+    idNextVideo: null
   });
+  const [cancelTimeCounter, setCancelTimeCounter] = useState(false);
+  const [key, setKey] = useState();
+  const [isLoadingBuffer, setIsLoadingBuffer] = useState(false);
+  const [imageInteractivity, setImageInteractivity] = useState();
+  const fullScreenHandle = useFullScreenHandle();
 
   useEffect(() => {
     if (!fullScreenHandle.active) {
@@ -113,152 +102,141 @@ const Video = ({
   }, [fullScreenHandle.active]);
 
   useEffect(() => {
-    if (controlsRef.current)
-      controlsRef.current.style.display = endVideoInteractive
-        ? "none"
-        : "block";
-  }, [endVideoInteractive]);
+    playerRef.current?.seekTo(parseFloat(seek));
+  }, [seek])
 
   useEffect(() => {
-    if (templateInteractividad) {
-      setImage("");
-      setEndVideoInteractive(false);
-    }
-    try {
-      if (playerRef && playerRef.current) {
-        setIsLoadingBuffer(true);
-        playerRef.current.seekTo(seek);
-        setState({ ...state, played: seek });
-      }
-    } catch (e) {}
-  }, [src]);
+    setIsPlaying(playing)
+  }, [playing, src])
 
   useEffect(() => {
-    if (playerRef && playerRef.current) {
-      playerRef.current.seekTo(seek);
+    timerForProgress = 0;
+    cancelSubscriptions();
+    setKey(src)
+    setEndVideo(false);
+    if(actionBackButton.idNextVideo !== videoSelected?.item?.idVideo) {
+      setActionBackButton({
+        video: null,
+        click: null,
+        idNextVideo: null
+      })
     }
-  }, [seek]);
+  }, [src])
 
   useEffect(() => {
-    try {
-      if (playerRef && playerRef.current) {
-        playerRef.current.seekTo(state.played);
-      }
-    } catch (e) {}
-  }, [key]);
-
-  useEffect(() => {
-    setKey(playing ? "playing" : "stop");
-    if (playing) {
-      setEndTime(false);
+    if(endVideo) {
+      setCancelTimeCounter(false);
+      setTimeout(()=> {
+        if (containerControlsRef.current && templateInteractivity) {
+          containerControlsRef.current.style.display = "none";
+          playerRef.current?.seekTo(playerRef.current?.getDuration() || 0);
+        } else {
+          containerControlsRef.current.style.display = "flex";
+        }
+        setIsPlaying(false);
+      },1);
+    } else {
+      if (containerControlsRef.current) 
+        containerControlsRef.current.style.display = "flex";
     }
-    if (!playing && templateInteractividad) setImage("");
+  }, [endVideo])
 
-    if (!templateInteractividad) {
-      if (controlsRef.current)
-        controlsRef.current.style.display = !playing ? "block" : "none";
+  const handleMouseMove = () => {
+    if(!endVideo) {
+      cancelSubscriptions();
+      if (controlsRef.current) controlsRef.current.style.display = "block";
+      timeOutControlsBar = setTimeout(() => {
+        if (controlsRef.current) controlsRef.current.style.display = "none";
+      }, 3000);
     }
-  }, [playing]);
-
-  const handlePlayPause = () => {
-    if (
-      lastMinuteSeenVideo &&
-      Math.trunc(lastMinuteSeenVideo) ===
-        Math.trunc(playerRef?.current?.getDuration())
-    ) {
-      setState({ ...state, played: 0 });
-    }
-    setPlaying(!playing);
-    onPlay && onPlay();
   };
 
   const handleOnProgress = (changeState) => {
-    if (playing) {
-      if (count > 2) {
-        if (controlsRef.current) controlsRef.current.style.display = "none";
-        count = 0;
-      }
-      if (controlsRef.current && controlsRef.current.style.display == "block") {
-        count += 1;
-      }
-      setState({ ...state, ...changeState });
-      setLastMinuteSeenVideo(changeState.playedSeconds);
-    }
-    onProgress && onProgress(changeState);
-  };
-
-  const handleOnEnded = () => {
-    if (!templateInteractividad) {
-      setPlaying(false);
-      setEnd(true);
-      setEndTime(true);
-      onInitTimer && onInitTimer(playerRef.current.getDuration());
-    } else { 
-      setEndVideoInteractive(true);
-      controlsRef.current.style.display = "none";
-      onEndedVideoInteractive &&
-        onEndedVideoInteractive(playerRef.current.getDuration());
+    setPlayed(changeState.played);
+    if (timerForProgress > 2) {
+      timerForProgress = 0;
+      onProgress(changeState);
+    } else {
+      timerForProgress += 1;
     }
   };
 
-  //--- events controls
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
 
-  const toggleFullScreen = () => {
+  const handleMute = () => {
+    setIsMuted(!isMuted);
+  };
+
+  const handleToggleFullScreen = () => {
     if (fullScreenHandle.active) {
       fullScreenHandle.exit();
     } else {
       fullScreenHandle.enter();
     }
-  };
+  }
 
-  const handleOnComplete = () => {
-    setEndTime(false);
+  const handleOnEnded = () => {
+    setEndVideo(true);
+    //if(videoSelected?.item?.templateInteractividad)
     onEnded && onEnded(playerRef.current.getDuration());
   };
 
-  const handleMute = () => {
-    setState({ ...state, muted: !state.muted });
+  const handleOnComplete = () => {
+    setCancelTimeCounter(true);
+    onEndedTimer && onEndedTimer(playerRef.current.getDuration());
   };
 
-  const handleMouseMove = () => {
-    if (!templateInteractividad) {
-      if (controlsRef.current) controlsRef.current.style.display = "block";
-      count = 0;
-    } else {
-      if (controlsRef.current) {
-        if (endVideoInteractive) controlsRef.current.style.display = "none";
-        else controlsRef.current.style.display = "block";
-      }
-      count = 0;
-    }
-  };
+  const handleOnClickInteractivity = (currentVideo, idVideo, duration) => {
+    setActionBackButton({
+      video: currentVideo,
+      click: 'click on interactivity',
+      idNextVideo: idVideo
+    });
+    onClickCTA && onClickCTA(idVideo, duration);
+  }
 
+  const replayVideo = () => {
+    setIsPlaying(true);
+    setEndVideo(false);
+    setPlayed(0);
+    playerRef.current?.seekTo(0);
+  }
+ 
   const renderContentBottom = () => {
     return showButtonsFooter ? (
       <ContainerButtonsFooter>
+        {actionBackButton.click && (<Button
+          label="Volver"
+          iconLeft={ArrowDoubleLeftWhite}
+          onClick={() => {
+            const videoBackButton = actionBackButton.video;
+            setActionBackButton({
+              video: null,
+              click: null,
+              idNextVideo: null
+            })
+            onClickPrevVideo &&
+              onClickPrevVideo(videoBackButton);
+          }}
+          styleIconRight={{ height: "30px", width: "30px" }}
+          size="small"
+        />)}
         <Button
           iconLeft={ArrowReplay}
           styleIconLeft={{ height: "30px", width: "30px" }}
-          onClick={() => {
-            if (templateInteractividad) {
-              setImage("");
-              setEndVideoInteractive(false);
-            }
-            setEndTime(false);
-            setPlaying(true);
-            setState({ ...state, played: 0 });
-            if (playerRef) playerRef.current.seekTo(0);
-          }}
+          onClick={() => replayVideo()}
           size="small"
-          styleButton={{ marginRight: "8px" }}
+          styleButton={{ margin: "0px 8px" }}
         />
         <Button
           label="Seguir"
           iconRight={ArrowDoubleRight}
           onClick={() => {
-            setEndTime(false);
+            setEndVideo(false);
             onClickNextVideo &&
-              onClickNextVideo(playerRef?.current?.getDuration());
+              onClickNextVideo(playerRef.current?.getDuration());
           }}
           styleIconRight={{ height: "30px", width: "30px" }}
           size="small"
@@ -267,22 +245,9 @@ const Video = ({
     ) : null;
   };
 
-  const currentTime =
-    playerRef && playerRef.current
-      ? playerRef.current.getCurrentTime()
-      : "00:00";
-
-  const duration =
-    playerRef && playerRef.current ? playerRef.current.getDuration() : "00:00";
-
-  const elapsedTime =
-    timeDisplayFormat == "normal"
-      ? format(currentTime)
-      : `-${format(duration - currentTime)}`;
-
-  const totalDuration = format(duration);
-
-  const { muted, played } = state;
+  const currentTime = playerRef.current?.getCurrentTime();
+  const duration = playerRef.current?.getDuration();
+  const ctas = videoSelected?.item?.ctas ? JSON.parse(videoSelected?.item?.ctas): null
 
   return (
     <div>
@@ -304,140 +269,116 @@ const Video = ({
               height={heightVideo}
               url={src}
               playsinline
-              playing={playing}
-              onProgress={handleOnProgress}
+              playing={isPlaying}
+              autoPlay={isPlaying}
+              muted={isMuted}
               onEnded={handleOnEnded}
+              onProgress={handleOnProgress}
               onReady={() => {
                 setIsLoadingBuffer(false);
-              }}
-              muted={muted}
+              }} 
               onBuffer={() => setIsLoadingBuffer(true)}
               onBufferEnd={() => setIsLoadingBuffer(false)}
             />
-            {templateInteractividad && (
-              <ControlsInteractive
-                ref={controlsRef}
-                playing={playing}
-                muted={muted}
-                played={played}
-                elapsedTime={elapsedTime}
-                totalDuration={totalDuration}
-                onPlayPause={handlePlayPause}
-                onToggleFullScreen={toggleFullScreen}
-                onMute={handleMute}
-              />
-            )}
+                      
+            <Controls
+              controlsRef={controlsRef}
+              containerControlsRef={containerControlsRef}
+              player={playerRef.current}
+              playing={isPlaying}
+              played={played}
+              currentTime={currentTime}
+              duration={duration}
+              muted={isMuted}
+              isFullScreen={fullScreenHandle.active}
+              onMuted={handleMute}
+              onPlayPause={handlePlayPause}
+              onToggleFullScreen={handleToggleFullScreen}
+              contentBottom={
+                fullScreenHandle.active ? renderContentBottom() : null
+              }
+            /> 
 
-            {!templateInteractividad && (
-              <Controls
-                controlsRef={controlsRef}
-                showControlsPlayer={!templateInteractividad}
-                title={title}
-                playing={playing}
-                muted={muted}
-                played={played}
-                elapsedTime={elapsedTime}
-                totalDuration={totalDuration}
-                onPlayPause={handlePlayPause}
-                isFullScreen={fullScreenHandle.active}
-                onToggleFullScreen={toggleFullScreen}
-                onMute={handleMute}
-                contentBottom={
-                  fullScreenHandle.active ? renderContentBottom() : null
-                }
-              />
-            )}
-
-            {templateInteractividad &&
-              endVideoInteractive &&
-              templateInteractividad === "template1" && (
+            {templateInteractivity &&
+              endVideo &&
+              templateInteractivity === "template1" && (
                 <Template1
-                  onClickFirst={() =>
-                    onClickCTA(ctas[`cta1`], playerRef?.current?.getDuration())
-                  }
-                  onClickSecond={() =>
-                    onClickCTA(ctas[`cta2`], playerRef?.current?.getDuration())
-                  }
+                  onClickFirst={() => handleOnClickInteractivity(videoSelected, ctas[`cta1`], playerRef?.current?.getDuration())}
+                  onClickSecond={() => handleOnClickInteractivity(videoSelected, ctas[`cta2`], playerRef?.current?.getDuration())}
                 />
               )}
 
-            {templateInteractividad &&
-              endVideoInteractive &&
-              templateInteractividad === "template2" && (
+            {templateInteractivity &&
+              endVideo &&
+              templateInteractivity === "template2" && (
                 <Template2
-                  src={image}
+                  src={imageInteractivity}
                   onClickFirst={() =>
-                    setImage(ctas[`cta1`], playerRef?.current?.getDuration())
+                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
                   }
                   onClickSecond={() =>
-                    setImage(ctas[`cta2`], playerRef?.current?.getDuration())
+                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
                   }
                   onClickThird={() =>
-                    setImage(ctas[`cta3`], playerRef?.current?.getDuration())
+                    setImageInteractivity(ctas[`cta3`], playerRef?.current?.getDuration())
                   }
                 />
               )}
 
-            {templateInteractividad &&
-              endVideoInteractive &&
-              templateInteractividad === "template3" && (
+            {templateInteractivity &&
+              endVideo &&
+              templateInteractivity === "template3" && (
                 <Template3
-                  onClickFirst={() =>
-                    onClickCTA(ctas[`cta1`], playerRef?.current?.getDuration())
-                  }
-                  onClickSecond={() =>
-                    onClickCTA(ctas[`cta2`], playerRef?.current?.getDuration())
-                  }
-                  onClickThird={() =>
-                    onClickCTA(ctas[`cta3`], playerRef?.current?.getDuration())
-                  }
+                  onClickFirst={() => handleOnClickInteractivity(videoSelected, ctas[`cta1`], playerRef?.current?.getDuration())}
+                  onClickSecond={() => handleOnClickInteractivity(videoSelected, ctas[`cta2`], playerRef?.current?.getDuration())}
+                  onClickThird={() => handleOnClickInteractivity(videoSelected, ctas[`cta3`], playerRef?.current?.getDuration())}
                 />
               )}
 
-            {templateInteractividad &&
-              endVideoInteractive &&
-              templateInteractividad === "template4" && (
+            {templateInteractivity &&
+              endVideo &&
+              templateInteractivity === "template4" && (
                 <Template4
-                  src={image}
+                  src={imageInteractivity}
                   onClickFirst={() =>
-                    setImage(ctas[`cta1`], playerRef?.current?.getDuration())
+                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
                   }
                   onClickSecond={() =>
-                    setImage(ctas[`cta2`], playerRef?.current?.getDuration())
+                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
                   }
                 />
               )}
 
-            {templateInteractividad &&
-              endVideoInteractive &&
-              templateInteractividad === "template5" && (
+            {templateInteractivity &&
+              endVideo &&
+              templateInteractivity === "template5" && (
                 <Template5
-                  src={image}
+                  src={imageInteractivity}
                   onClickFirst={() =>
-                    setImage(ctas[`cta1`], playerRef?.current?.getDuration())
+                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
                   }
                   onClickSecond={() =>
-                    setImage(ctas[`cta2`], playerRef?.current?.getDuration())
+                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
                   }
                   onClickThird={() =>
-                    setImage(ctas[`cta3`], playerRef?.current?.getDuration())
+                    setImageInteractivity(ctas[`cta3`], playerRef?.current?.getDuration())
                   }
                   onClickFourth={() =>
-                    setImage(ctas[`cta4`], playerRef?.current?.getDuration())
+                    setImageInteractivity(ctas[`cta4`], playerRef?.current?.getDuration())
                   }
                   onClickFifth={() =>
-                    setImage(ctas[`cta5`], playerRef?.current?.getDuration())
+                    setImageInteractivity(ctas[`cta5`], playerRef?.current?.getDuration())
                   }
                   onClickSixth={() =>
-                    setImage(ctas[`cta6`], playerRef?.current?.getDuration())
+                    setImageInteractivity(ctas[`cta6`], playerRef?.current?.getDuration())
                   }
                   onClickSeventh={() =>
-                    setImage(ctas[`cta7`], playerRef?.current?.getDuration())
+                    setImageInteractivity(ctas[`cta7`], playerRef?.current?.getDuration())
                   }
                 />
               )}
 
-            {delayToFinalizeVideo > 0 && endTime && !playing && (
+            {endVideo && !templateInteractivity && !cancelTimeCounter && (
               <ContainerLoading>
                 <div
                   style={{
@@ -446,8 +387,8 @@ const Video = ({
                     alignItems: "center",
                     marginTop: "19px",
                   }}
-                  onClick={() => {
-                    setEndTime(false);
+                  onClick={()=> {
+                    setCancelTimeCounter(true);
                   }}
                 >
                   <>
@@ -457,7 +398,7 @@ const Video = ({
                       isPlaying
                       duration={delayToFinalizeVideo}
                       colors={["#FFFFFF"]}
-                      onComplete={handleOnComplete}
+                      onComplete={() => handleOnComplete()}
                     />
                     <Description>Cargando próximo video...</Description>
                   </>
@@ -465,18 +406,21 @@ const Video = ({
               </ContainerLoading>
             )}
 
-            {isLoadingVideo ||
-              (isLoadingBuffer && (
+            {isLoadingBuffer && (
                 <ContainerLoading>
                   <Loading type="Oval" color="#FFFFFF" />
                 </ContainerLoading>
-              ))}
+              )}
           </div>
         </FullScreen>
         {renderContentBottom()}
       </>
     </div>
   );
+};
+
+Video.defaultProps = {
+  seek: 0,
 };
 
 Video.propTypes = {

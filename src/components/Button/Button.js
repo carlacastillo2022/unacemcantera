@@ -7,6 +7,7 @@ const StyledButton = styled.button`
   border: 0px;
   height: auto;
   position: relative;
+  cursor: pointer;
   background-position: center;
   transition: background-color 0.8s;
   font-family: ${({ theme }) => theme.fonts.mainFont};

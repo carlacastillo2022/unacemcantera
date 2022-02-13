@@ -20,7 +20,6 @@ import ArrowDoubleLeftDark from "@assets/images/arrow-double-left-dark.svg";
 import LockedButton from "@assets/images/locked-button.svg";
 import Time from "@assets/images/time.svg";
 import Lessons from "@assets/images/lessons.svg";
-import Loading from "@components/Loading";
 import QuickQuestionary from "@components/QuickQuestionary";
 
 const ContainerCards = styled.div`
@@ -65,10 +64,6 @@ const ContentRight = styled.div`
   }
 `;
 
-let timeOutFetch = 2;
-let isPlay = false;
-let isEnd = false;
-
 const Home = () => {
   const history = useHistory();
   const location = useLocation();
@@ -88,13 +83,12 @@ const Home = () => {
   const [seek, setSeek] = useState(0);
 
   const { fetch: fetchVideoByCourse, data: dataLessons } = useFetchLessons();
-  const { fetch: fetchTracking, data: dataTracking } = useFetchTracking();
+  const { fetch: fetchTracking } = useFetchTracking();
   const { fetch: fetchQuestions, data: dataQuestions } = useFetchQuestions();
   const { fetch: fetchCourse, data: dataInfoCourse } = useFetchCourse();
 
   useEffect(() => {
     setSeek(videoSelected?.item?.ultimoMinutoVisto || 0);
-    timeOutFetch = 2;
   }, [videoSelected]);
 
   useEffect(() => {
@@ -105,19 +99,6 @@ const Home = () => {
     fetchCourse(token_, idCurso_);
     fetchVideoByCourse(token_, idCurso_);
   }, []);
-
-  useEffect(() => {
-    if (dataTracking?.success && isEnd) {
-      isEnd = false;
-      fetchQuestions(
-        token,
-        videoSelected?.item?.idCurso,
-        videoSelected?.item?.idVideo
-      );
-    } else {
-      setIsLoading(false);
-    }
-  }, [dataTracking]);
 
   useEffect(() => {
     setIsLoading(false);
@@ -160,13 +141,10 @@ const Home = () => {
         const sumDurations_ = sumDurations(dataLessons?.data);
         setDuration(sumDurations_.formatted);
         if (videoSelected.index !== -1) {
-          setSeek(0);
           setVideoSelected(find);
-          isPlay = true;
           setPlaying(true);
         }
       } else {
-        isPlay = false;
         const find = {
           index: data.length - 1,
           item: data[data.length - 1],
@@ -184,30 +162,16 @@ const Home = () => {
 
   const handleOnProgress = (e) => {
     const currentTime = e.playedSeconds;
-    if (isPlay && isSelectedVideo) {
-      if (currentTime > timeOutFetch) {
-        timeOutFetch = currentTime + timeOutFetch;
-        fetchTracking(
-          token,
-          videoSelected?.item?.idCurso,
-          videoSelected?.item?.idVideo,
-          currentTime
-        );
-      }
-    }
-  };
-
-  const handleOnPlay = () => {
-    isEnd = false;
-    isPlay = !playing;
-    setPlaying(!playing);
+    fetchTracking(
+      token,
+      videoSelected?.item?.idCurso,
+      videoSelected?.item?.idVideo,
+      currentTime
+    );
   };
 
   const handleOnEnded = (currentTime) => {
-    if (isPlay && isSelectedVideo) {
-      isPlay = false;
-      isEnd = true;
-      setIsLoading(true);
+    if(videoSelected?.item?.templateInteractividad) { 
       fetchTracking(
         token,
         videoSelected?.item?.idCurso,
@@ -218,47 +182,39 @@ const Home = () => {
     }
   };
 
-  const handleOnEndedVideoInteractive = (currentTime) => {
-    isEnd = false;
-    fetchTracking(
-      token,
-      videoSelected?.item?.idCurso,
-      videoSelected?.item?.idVideo,
-      currentTime,
-      true
-    );
+  const handleOnEndedTimer = (currentTime) => { 
+    Promise.all([
+      fetchTracking(
+        token,
+        videoSelected?.item?.idCurso,
+        videoSelected?.item?.idVideo,
+        currentTime,
+        true
+      ),
+      fetchQuestions(
+        token,
+        videoSelected?.item?.idCurso,
+        videoSelected?.item?.idVideo
+      )
+    ])
   };
 
   const onClickNextVideo = (currentTime) => {
-    isPlay = false;
-    isEnd = true;
     setPlaying(false);
-    setIsLoading(true);
-    fetchTracking(
-      token,
-      videoSelected?.item?.idCurso,
-      videoSelected?.item?.idVideo,
-      currentTime,
-      true
-    );
+    fetchVideoByCourse(token, idCurso);
   };
+
+  const onClickPrevVideo = video => {
+    setQuestionary([]);
+    setIsSelectedVideo(true);
+    setVideoSelected(video);
+    setPlaying(true);
+  }
 
   const onFinished = () => {
     setIsLoading(true);
     setQuestionary([]);
     fetchVideoByCourse(token, videoSelected?.item?.idCurso);
-  };
-
-  const handleOnInitTimer = () => {
-    isEnd = false;
-    setPlaying(false);
-    fetchTracking(
-      token,
-      videoSelected?.item?.idCurso,
-      videoSelected?.item?.idVideo,
-      currentTime,
-      true
-    );
   };
 
   const onClickQuestionary = () => {
@@ -283,9 +239,7 @@ const Home = () => {
         : false
     );
     if (videoSelected.index !== -1) {
-      setSeek(0);
       setVideoSelected(find);
-      isPlay = true;
       setPlaying(true);
     }
   };
@@ -315,22 +269,20 @@ const Home = () => {
                   src={
                     !isSelectedVideo
                       ? dataInfoCourse?.data?.length &&
-                        `https://${dataInfoCourse?.data[0].thumbnailRutaPublica}`
+                      `https://${dataInfoCourse?.data[0].thumbnailRutaPublica}`
                       : `https://${videoSelected?.item?.rutaPublica}`
                   }
                   seek={seek}
                   onProgress={handleOnProgress}
-                  onPlay={handleOnPlay}
                   onEnded={handleOnEnded}
-                  onEndedVideoInteractive={handleOnEndedVideoInteractive}
+                  onEndedTimer={handleOnEndedTimer}
                   onClickCTA={onClickCTA}
-                  onInitTimer={handleOnInitTimer}
                   onClickNextVideo={onClickNextVideo}
+                  onClickPrevVideo={onClickPrevVideo}
                   isLoadingVideo={isLoading}
                   showButtonsFooter={!isSelectedVideo ? false : true}
                   delayToFinalizeVideo={!isSelectedVideo ? 0 : 5}
-                  title={videoSelected?.item?.nombreVideo || ""}
-                  templateInteractividad={
+                  templateInteractivity={
                     videoSelected?.item?.templateInteractividad
                   }
                   ctas={
@@ -338,7 +290,7 @@ const Home = () => {
                       ? JSON.parse(videoSelected?.item?.ctas)
                       : null
                   }
-                  lastMinuteSeen={videoSelected?.item?.ultimoMinutoVisto}
+                  videoSelected={videoSelected}
                 />
               </>
             ) : (
@@ -353,10 +305,9 @@ const Home = () => {
           <Title type="lg">
             {!isSelectedVideo
               ? dataInfoCourse?.data?.length &&
-                `${dataInfoCourse?.data[0].nombreCurso}`
-              : `Lección ${videoSelected?.index + 1 || 1}: ${
-                  videoSelected?.item?.nombreVideo || ""
-                }`}
+              `${dataInfoCourse?.data[0].nombreCurso}`
+              : `Lección ${videoSelected?.index + 1 || 1}: ${videoSelected?.item?.nombreVideo || ""
+              }`}
           </Title>
 
           {!isSelectedVideo && (
@@ -370,9 +321,8 @@ const Home = () => {
                 <CardInfo
                   icon={Lessons}
                   title="Lecciones"
-                  subTitle={`${lessons.length} ${
-                    lessons.length > 1 ? "lecciones" : "leccion"
-                  }`}
+                  subTitle={`${lessons.length} ${lessons.length > 1 ? "lecciones" : "leccion"
+                    }`}
                 />
               </ContainerCards>
               <Paragraph>
@@ -403,8 +353,6 @@ const Home = () => {
             videoSelected={videoSelected}
             onCallbackVideoSelected={(item, index) => {
               setQuestionary([]);
-              isPlay = true;
-              setSeek(0);
               setIsSelectedVideo(true);
               setVideoSelected({
                 item,
