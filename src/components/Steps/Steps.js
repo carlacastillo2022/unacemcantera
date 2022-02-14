@@ -136,7 +136,7 @@ const Steps = ({
   };
 
   const reducerSum = (accumulator, currentValue) => {
-    if (currentValue?.completoVista) {
+    if (currentValue?.ultimoMinutoVisto || (currentValue?.completoVista === "SI")) {
       return accumulator + 1;
     }
     return accumulator;
