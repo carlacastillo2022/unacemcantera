@@ -85,7 +85,7 @@ const Lesson = () => {
           }
         }
         setDisabledButton(
-          data?.find((item) => item.completoVista !== "SI") ? true : false
+          data?.find((item) => parseFloat(item.ultimoMinutoVisto || 0) <= 0) ? true : false
         );
         setVideoSelected(find);
         setPlaying(true);
@@ -95,7 +95,7 @@ const Lesson = () => {
           item: data[data.length - 1],
         };
         setDisabledButton(
-          data?.find((item) => item.completoVista !== "SI") ? true : false
+          data?.find((item) => parseFloat(item.ultimoMinutoVisto || 0) <= 0) ? true : false
         );
         setVideoSelected(find);
         setPlaying(false);
@@ -177,7 +177,7 @@ const Lesson = () => {
       item: lessons.find((item) => item.idVideo === idVideo),
     };
     setDisabledButton(
-      lessons?.find((item) => item.completoVista !== "SI") ? true : false
+      lessons?.find((item) => parseFloat(item.ultimoMinutoVisto || 0) <= 0) ? true : false
     );
     if (videoSelected.index !== -1) {
       setVideoSelected(find);
