@@ -134,7 +134,7 @@ const Home = () => {
           }
         }
         setDisabledButton(
-          data?.find((item) => parseFloat(item.ultimoMinutoVisto || 0) <= 0)
+          data?.find((item) => (parseFloat(item.ultimoMinutoVisto || 0) <= 0) || (item?.completoVista !== "SI"))
             ? true
             : false
         );
@@ -150,7 +150,7 @@ const Home = () => {
           item: data[data.length - 1],
         };
         setDisabledButton(
-          data?.find((item) => parseFloat(item.ultimoMinutoVisto || 0) <= 0)
+          data?.find((item) => (parseFloat(item.ultimoMinutoVisto || 0) <= 0) || (item?.completoVista !== "SI"))
             ? true
             : false
         );
@@ -234,7 +234,7 @@ const Home = () => {
       item: lessons.find((item) => item.idVideo === idVideo),
     };
     setDisabledButton(
-      lessons?.find((item) => parseFloat(item.ultimoMinutoVisto || 0) <= 0)
+      lessons?.find((item) => (parseFloat(item.ultimoMinutoVisto || 0) <= 0) || (item?.completoVista !== "SI"))
         ? true
         : false
     );

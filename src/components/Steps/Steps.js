@@ -246,7 +246,7 @@ const Steps = ({
         </ContainerProgress>
         <Container>
           {lessons.map((item, index) => {
-            isCompleted = item?.ultimoMinutoVisto;
+            isCompleted = item?.ultimoMinutoVisto || (item?.completoVista === "SI")
             if (isCompleted) {
               return renderUnlockStep(index, item);
             } else {
