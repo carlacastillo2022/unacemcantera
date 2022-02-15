@@ -134,9 +134,9 @@ const Home = () => {
           }
         }
         setDisabledButton(
-          data?.find((item) => (parseFloat(item.ultimoMinutoVisto || 0) <= 0) || (item?.completoVista !== "SI"))
-            ? true
-            : false
+          data?.find((item) => item.ultimoMinutoVisto || (item?.completoVista === "SI"))
+          ? false
+          : true
         );
         const sumDurations_ = sumDurations(dataLessons?.data);
         setDuration(sumDurations_.formatted);
@@ -150,9 +150,9 @@ const Home = () => {
           item: data[data.length - 1],
         };
         setDisabledButton(
-          data?.find((item) => (parseFloat(item.ultimoMinutoVisto || 0) <= 0) || (item?.completoVista !== "SI"))
-            ? true
-            : false
+          data?.find((item) => item.ultimoMinutoVisto || (item?.completoVista === "SI"))
+          ? false
+          : true
         );
         setVideoSelected(find);
         setPlaying(false);
@@ -234,9 +234,9 @@ const Home = () => {
       item: lessons.find((item) => item.idVideo === idVideo),
     };
     setDisabledButton(
-      lessons?.find((item) => (parseFloat(item.ultimoMinutoVisto || 0) <= 0) || (item?.completoVista !== "SI"))
-        ? true
-        : false
+      lessons?.find((item) => item.ultimoMinutoVisto || (item?.completoVista === "SI"))
+        ? false
+        : true
     );
     if (videoSelected.index !== -1) {
       setVideoSelected(find);
