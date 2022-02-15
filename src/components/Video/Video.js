@@ -15,6 +15,7 @@ import Template5 from "./components/Interactivity/Template5";
 import Template6 from "./components/Interactivity/Template6";
 import Template7 from "./components/Interactivity/Template7";
 import Template8 from "./components/Interactivity/Template8";
+import Template9 from "./components/Interactivity/Template9";
 import ArrowDoubleRight from "@assets/images/arrow-double-right.svg";
 import ArrowDoubleLeftWhite from "@assets/images/arrow-double-left-white.svg";
 import ArrowReplay from "@assets/images/arrow-replay.svg";
@@ -470,6 +471,28 @@ const Video = ({
                 />
               )}
 
+            {templateInteractivity &&
+              endVideo &&
+              templateInteractivity === "template9" && (
+                <Template9
+                  src={imageInteractivity}
+                  onClickFirst={() =>
+                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
+                  }
+                  onClickSecond={() =>
+                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
+                  }
+                  onClickThird={() =>
+                    setImageInteractivity(ctas[`cta3`], playerRef?.current?.getDuration())
+                  }
+                  onClickFourth={() =>
+                    setImageInteractivity(ctas[`cta4`], playerRef?.current?.getDuration())
+                  }
+                  onClickFifth={() =>
+                    setImageInteractivity(ctas[`cta5`], playerRef?.current?.getDuration())
+                  }
+                />
+              )}
 
             {isLoadingBuffer && (
                 <ContainerLoading>
