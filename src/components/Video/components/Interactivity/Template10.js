@@ -45,7 +45,7 @@ const ContainerButtons = styled.div`
   flex: 1.2;
   flex-direction: column;
   @media (min-width: 300px) {
-    margin-top: 1.5em;
+    margin-top: 1.2em;
   }
 
   @media (min-width: 1300px) {
