@@ -14,6 +14,7 @@ import Template4 from "./components/Interactivity/Template4";
 import Template5 from "./components/Interactivity/Template5";
 import Template6 from "./components/Interactivity/Template6";
 import Template7 from "./components/Interactivity/Template7";
+import Template8 from "./components/Interactivity/Template8";
 import ArrowDoubleRight from "@assets/images/arrow-double-right.svg";
 import ArrowDoubleLeftWhite from "@assets/images/arrow-double-left-white.svg";
 import ArrowReplay from "@assets/images/arrow-replay.svg";
@@ -452,7 +453,7 @@ const Video = ({
             {templateInteractivity &&
               endVideo &&
               templateInteractivity === "template8" && (
-                <Template7
+                <Template8
                   src={imageInteractivity}
                   onClickFirst={() =>
                     setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
