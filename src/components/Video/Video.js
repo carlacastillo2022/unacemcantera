@@ -449,6 +449,27 @@ const Video = ({
                 />
               )}
 
+            {templateInteractivity &&
+              endVideo &&
+              templateInteractivity === "template8" && (
+                <Template7
+                  src={imageInteractivity}
+                  onClickFirst={() =>
+                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
+                  }
+                  onClickSecond={() =>
+                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
+                  }
+                  onClickThird={() =>
+                    setImageInteractivity(ctas[`cta3`], playerRef?.current?.getDuration())
+                  }
+                  onClickFourth={() =>
+                    setImageInteractivity(ctas[`cta4`], playerRef?.current?.getDuration())
+                  }
+                />
+              )}
+
+
             {isLoadingBuffer && (
                 <ContainerLoading>
                   <Loading type="Oval" color="#FFFFFF" />
