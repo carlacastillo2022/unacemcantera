@@ -165,7 +165,11 @@ const Lesson = () => {
 
   const onClickNextVideo = (currentTime) => {
     setPlaying(false);
-    fetchVideoByCourse(token, idCurso);
+    fetchQuestions(
+      token,
+      videoSelected?.item?.idCurso,
+      videoSelected?.item?.idVideo
+    );
   };
 
   const onClickPrevVideo = video => {
