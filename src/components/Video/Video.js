@@ -64,6 +64,7 @@ const Video = ({
   src,
   playing,
   seek,
+  isLoadingVideo,
   videoSelected,
   templateInteractivity,
   delayToFinalizeVideo,
@@ -515,7 +516,7 @@ const Video = ({
                 />
               )}
 
-            {isLoadingBuffer && (
+            {isLoadingVideo || isLoadingBuffer && (
                 <ContainerLoading>
                   <Loading type="Oval" color="#FFFFFF" />
                 </ContainerLoading>

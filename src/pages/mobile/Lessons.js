@@ -48,6 +48,7 @@ const Lesson = () => {
   }, [videoSelected]);
 
   useEffect(() => {
+    setIsLoading(true);
     fetchVideoByCourse(token, idCurso);
   }, []);
 
@@ -164,6 +165,7 @@ const Lesson = () => {
   };
 
   const onClickNextVideo = (currentTime) => {
+    setIsLoading(true);
     setPlaying(false);
     fetchQuestions(
       token,
