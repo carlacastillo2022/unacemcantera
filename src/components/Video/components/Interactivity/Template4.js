@@ -46,6 +46,8 @@ const ButtonInteractiveRight = styled.button`
   background-position: center;
   transition: background-color 0.8s;
   cursor: pointer;
+  margin: 0px !important;
+  padding: 0px !important;
   &:active {
     background: linear-gradient(to right, #f3f3f3, transparent);
     background-size: 100%;
@@ -64,6 +66,8 @@ const ButtonInteractiveLeft = styled.button`
   background-position: center;
   transition: background-color 0.8s;
   cursor: pointer;
+  margin: 0px !important;
+  padding: 0px !important;
   &:active {
     background: linear-gradient(to left, #f3f3f3, transparent);
     background-size: 100%;

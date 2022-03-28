@@ -38,6 +38,8 @@ const ButtonInteractiveLeft = styled.button`
   background-position: center;
   transition: background-color 0.8s;
   cursor: pointer;
+  margin: 0px !important;
+  padding: 0px !important;
 `;
 
 const ContainerButtons = styled.div`

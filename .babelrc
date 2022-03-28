@@ -8,6 +8,7 @@
         "alias": {
           "@components": "./src/components",
           "@pages": "./src/pages",
+          "@routes": "./src/routes",
           "@assets": "./src/assets",
           "@hooks": "./src/hooks",
           "@commons": "./src/commons"

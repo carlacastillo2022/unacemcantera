@@ -197,7 +197,7 @@ const Controls = ({
             <div style={{ width: "100%" }}>{contentBottom}</div>
           )}
           {playing && (
-            <div ref={controlsRef} style={{ width: "100%" }}>
+            <div ref={controlsRef} style={{ width: "100%", display: "none" }}>
               <ContentProgress>
                 <Progress seek={played * 100} />
               </ContentProgress>

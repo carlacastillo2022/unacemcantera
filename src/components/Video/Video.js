@@ -59,6 +59,7 @@ const cancelSubscriptions = () => {
 };
 
 const Video = ({
+  playerRef,
   width,
   height,
   src,
@@ -76,7 +77,6 @@ const Video = ({
   onEnded,
   onEndedTimer,
 }) => {
-  const playerRef = useRef(null);
   const controlsRef = useRef(null);
   const containerControlsRef = useRef(null);
 
@@ -108,7 +108,7 @@ const Video = ({
   }, [fullScreenHandle.active]);
 
   useEffect(() => {
-    playerRef.current?.seekTo(parseFloat(seek));
+    playerRef.current?.seekTo(`${seek}`);
   }, [seek])
 
   useEffect(() => {
@@ -116,6 +116,8 @@ const Video = ({
   }, [playing, src])
 
   useEffect(() => {
+    if (controlsRef.current) controlsRef.current.style.display = "none";
+    setIsLoadingBuffer(true);
     timerForProgress = 0;
     cancelSubscriptions();
     setKey(src)
@@ -186,7 +188,6 @@ const Video = ({
 
   const handleOnEnded = () => {
     setEndVideo(true);
-    //if(videoSelected?.item?.templateInteractividad)
     onEnded && onEnded(playerRef.current.getDuration());
   };
 
@@ -235,7 +236,7 @@ const Video = ({
           styleIconLeft={{ height: "30px", width: "30px" }}
           onClick={() => replayVideo()}
           size="small"
-          styleButton={{ margin: "0px 8px" }}
+          styleButton={{ marginRight: "8px", marginLeft: "8px"}}
         />
         <Button
           label="Seguir"
@@ -286,6 +287,7 @@ const Video = ({
               }} 
               onBuffer={() => setIsLoadingBuffer(true)}
               onBufferEnd={() => setIsLoadingBuffer(false)}
+              type='video/mp4'
             />
                       
             <Controls
@@ -534,6 +536,7 @@ Video.defaultProps = {
 };
 
 Video.propTypes = {
+  playerRef: PropTypes.object.isRequired,
   delayToFinalizeVideo: PropTypes.number,
   onInitTimer: PropTypes.func,
   onClickNextVideo: PropTypes.func,

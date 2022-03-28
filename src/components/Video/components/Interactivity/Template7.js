@@ -38,6 +38,8 @@ const ButtonInteractiveLeft = styled.button`
   background-position: center;
   transition: background-color 0.8s;
   cursor: pointer;
+  margin: 0px !important;
+  padding: 0px !important;
   @media (min-width: 300px) {
     height: 15px;
   }
@@ -56,8 +58,13 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin-top: 2em;
   justify-content: center;
+  @media (min-width: 300px) {
+    margin-top: 1.5em;
+  }
+  @media (min-width: 900px) {
+    margin-top: 3em;
+  }
 `;
 
 const Template7 = ({

@@ -1,11 +1,9 @@
 import React from "react";
-import { Home, Lessons, Questionary, Certificate } from "@pages";
 import { ThemeProvider } from "styled-components";
 import { IconContext } from "react-icons";
-import { QueryParamProvider } from "use-query-params";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import theme from "./theme";
 import AppStyles from "./theme/appStyles";
+import MainRouter from "@routes";
 
 const App = () => {
   return (
@@ -18,24 +16,7 @@ const App = () => {
           }}
         >
           <AppStyles />
-          <Router>
-            <QueryParamProvider ReactRouterRoute={Route}>
-              <Switch>
-                <Route exact path="/" render={() => <Home />}></Route>
-                <Route exact path="/lessons" render={() => <Lessons />}></Route>
-                <Route
-                  exact
-                  path="/questionary"
-                  render={() => <Questionary />}
-                ></Route>
-                <Route
-                  exact
-                  path="/certificate"
-                  render={() => <Certificate />}
-                ></Route>
-              </Switch>
-            </QueryParamProvider>
-          </Router>
+          <MainRouter />
         </IconContext.Provider>
       </ThemeProvider>
     </>

@@ -38,6 +38,25 @@ const ButtonInteractiveLeft = styled.button`
   background-position: center;
   transition: background-color 0.8s;
   cursor: pointer;
+  margin: 0px !important;
+  padding: 0px !important;
+`;
+
+const ContainerButtons = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  @media (min-width: 300px) {
+    margin-top: 1.8em;
+  }
+
+  @media (min-width: 768px) {
+    margin-top: 4em;
+  }
+
+  @media (min-width: 1300px) {
+    margin-top: 1em;
+  }
 `;
 
 const Template6 = ({ onClickFirst, onClickSecond, src }) => {
@@ -46,13 +65,13 @@ const Template6 = ({ onClickFirst, onClickSecond, src }) => {
       <ContentInteractivity></ContentInteractivity>
       <ContentInteractivity>
         <div style={{ display: "flex", flex: 1 }}></div>
-        <div style={{ display: "flex", flex: 1, flexDirection: "column", marginTop: '1em' }}>
+        <ContainerButtons>
         <ButtonInteractiveLeft></ButtonInteractiveLeft>
           <ButtonInteractiveLeft onClick={onClickFirst}></ButtonInteractiveLeft>
           <ButtonInteractiveLeft
             onClick={onClickSecond}
           ></ButtonInteractiveLeft>
-        </div>
+        </ContainerButtons>
         <div style={{ display: "flex", flex: 1 }}></div>
       </ContentInteractivity>
     </ContainerInteractivity>

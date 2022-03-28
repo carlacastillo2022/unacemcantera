@@ -5,7 +5,6 @@ import ProgressBar from "@components/ProgressBar";
 import ArrowUp from "@assets/images/arrow-up.svg";
 import ArrowDown from "@assets/images/arrow-down.svg";
 import Close from "@assets/images/close.svg";
-import Lock from "@assets/images/lock.svg";
 import { useHistory } from "react-router-dom";
 
 const StyledArrowUp = styled.img`
@@ -70,15 +69,15 @@ const Circle = styled.div`
 
 const VerticalBar = styled.div`
   width: 3px;
-  height: ${({ height }) => height}px;
+  height: ${({ height }) => height};
   background: ${({ isLight }) => (isLight ? "#E52820" : "#EEEEEE")};
 `;
 
 const Content = styled.div`
   display: flex;
   flex-direction: row;
-  height: 81px;
-  height: ${({ height }) => height}px;
+  min-height: 81px;
+  height: 100%;
   background: ${({ background }) => background};
   cursor: pointer;
 `;
@@ -119,6 +118,21 @@ const Description = styled.span`
   margin-top: 10px;
 `;
 
+const Tag = styled.div`
+  margin-top: 10px;
+  span {
+    background-color: #eee;
+    font-size: 14px;
+    line-height: 1.43;
+    font-weight: 500;
+    padding: 4px;
+    border-radius: 8px;
+    color: #333333;
+    font-family: ${({ theme }) => theme.fonts.mainFont};
+    color: #5e4c4c;
+  }
+`;
+
 let isCompleted = true;
 
 const Steps = ({
@@ -136,7 +150,7 @@ const Steps = ({
   };
 
   const reducerSum = (accumulator, currentValue) => {
-    if (currentValue?.ultimoMinutoVisto || (currentValue?.completoVista === "SI")) {
+    if (currentValue?.completoVista === "SI") {
       return accumulator + 1;
     }
     return accumulator;
@@ -147,19 +161,18 @@ const Steps = ({
       <Content
         key={index}
         onClick={() => onClick(index, item)}
-        height={index === 0 ? 81 : 97}
         background={index === videoSelected?.index ? "#f3f3f3" : "#fafafa"}
         style={{
           padding: index === 0 ? "16px 16px 0px" : "0px 16px 0px",
         }}
       >
         <ContentLeft>
-          {index > 0 && <VerticalBar height={20} />}
+          {index > 0 && <VerticalBar height={"20px"} />}
           <Circle>
             <span>{index + 1 < 10 ? `0${index + 1}` : index + 1}</span>
           </Circle>
           {index !== lessons.length - 1 && (
-            <VerticalBar height={index === 0 ? 49 : 45} />
+            <VerticalBar height={index === 0 ? "calc(100% - 32px)" : "calc(100% - 52px)"} />
           )}
         </ContentLeft>
         <ContentRight
@@ -173,6 +186,11 @@ const Steps = ({
         >
           <Title>{item.nombreVideo}</Title>
           <Description>{`Duración: ${item.duracion}/ Video`}</Description>
+          {item.tieneCuestionario === 'SI' && (
+            <Tag>
+              <span>Cuestionario</span>
+            </Tag>
+          )}
         </ContentRight>
         {index === videoSelected?.index ? (
           <StyledArrowUp src={ArrowUp} marginTop={index > 0 ? 26 : 6} />
@@ -187,7 +205,6 @@ const Steps = ({
     return (
       <Content
         key={index}
-        height={index === 0 ? 81 : 97}
         background={index === videoSelected?.index ? "#f3f3f3" : "#fafafa"}
         onClick={() => onClick(index, item)}
         style={{
@@ -195,12 +212,12 @@ const Steps = ({
         }}
       >
         <ContentLeft>
-          {index > 0 && <VerticalBar height={20} isLight />}
+          {index > 0 && <VerticalBar height={"20px"} isLight />}
           <Circle isLight>
             <span>{index + 1 < 10 ? `0${index + 1}` : index + 1}</span>
           </Circle>
           {index !== lessons.length - 1 && (
-            <VerticalBar height={index === 0 ? 49 : 45} isLight />
+            <VerticalBar height={index === 0 ?  "calc(100% - 32px)" : "calc(100% - 52px)"} isLight />
           )}
         </ContentLeft>
         <ContentRight
@@ -212,6 +229,11 @@ const Steps = ({
         >
           <Title>{item.nombreVideo}</Title>
           <Description>{`Duración: ${item.duracion}/ Video`}</Description>
+          {item.tieneCuestionario === 'SI' && (
+            <Tag>
+              <span>Cuestionario</span>
+            </Tag>
+          )}
         </ContentRight>
         {index === videoSelected?.index ? (
           <StyledArrowUp src={ArrowUp} marginTop={index > 0 ? 26 : 6} />
@@ -246,7 +268,7 @@ const Steps = ({
         </ContainerProgress>
         <Container>
           {lessons.map((item, index) => {
-            isCompleted = item?.ultimoMinutoVisto || (item?.completoVista === "SI")
+            isCompleted = item?.completoVista === "SI"
             if (isCompleted) {
               return renderUnlockStep(index, item);
             } else {

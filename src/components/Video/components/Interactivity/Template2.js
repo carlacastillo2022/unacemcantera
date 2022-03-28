@@ -37,6 +37,8 @@ const ButtonInteractiveLeft = styled.button`
   justify-content: flex-end;
   background-position: center;
   transition: background-color 0.8s;
+  margin: 0px !important;
+  padding: 0px !important;
   cursor: pointer;
 `;
 

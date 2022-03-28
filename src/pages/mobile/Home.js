@@ -4,6 +4,7 @@ import { useFetchLessons, useFetchCourse } from "@hooks/useCourses";
 import { StringParam, useQueryParam } from "use-query-params";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
+import ROUTES from "@routes/constants";
 import Link from "@components/Link";
 import Button from "@components/Button";
 import Title from "@components/Title";
@@ -31,6 +32,7 @@ const Home = () => {
   const history = useHistory();
   const [token, setToken] = useQueryParam("token", StringParam);
   const [idCurso, setIdCurso] = useQueryParam("idCurso", StringParam);
+  const playerRef = useRef(null);
 
   const [lessons, setLessons] = useState([]);
   const [playing, setPlaying] = useState(false);
@@ -81,8 +83,9 @@ const Home = () => {
       </Link>
       <>
         <div style={{ margin: "16px 0px" }}>
-          {dataInfoCourse?.data?.length ? (
+          {/* dataInfoCourse?.data?.length ? (
             <Video
+              playerRef={playerRef}
               width="100%"
               height="30%"
               src={`https://${dataInfoCourse?.data[0].thumbnailRutaPublica}`}
@@ -90,7 +93,7 @@ const Home = () => {
               playing={playing}
               setPlaying={setPlaying}
             />
-          ) : null}
+          ) : null */}
         </div>
         {dataInfoCourse?.data?.length && (
           <Title type="lg">{dataInfoCourse?.data[0].nombreCurso || ""}</Title>
@@ -100,7 +103,7 @@ const Home = () => {
             <Button
               onClick={() => {
                 history.push({
-                  pathname: "/lessons",
+                  pathname: ROUTES.LESSONS,
                   state: {
                     token,
                     idCurso,

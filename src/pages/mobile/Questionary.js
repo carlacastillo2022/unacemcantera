@@ -4,6 +4,8 @@ import {
   useFetchQuestionsCourse,
   useFetchResponseQuestionary,
 } from "@hooks/useCourses";
+import { useHistory, useLocation } from "react-router-dom";
+import ROUTES from "@routes/constants";
 import Link from "@components/Link";
 import Button from "@components/Button";
 import Title from "@components/Title";
@@ -12,7 +14,7 @@ import ArrowDoubleRight from "@assets/images/arrow-double-right.svg";
 import RadioNormal from "@assets/images/radio-normal.svg";
 import RadioSelected from "@assets/images/radio-selected.svg";
 import LockedButton from "@assets/images/locked-button.svg";
-import { useHistory, useLocation } from "react-router-dom";
+import Dialog from "@components/Dialog";
 
 const Paragraph = styled.p`
   font-weight: 400 !important;
@@ -34,6 +36,12 @@ const Alternative = styled.div`
   align-items: center;
 `;
 
+const DialogContainer = styled.div`
+  display: flex; 
+  align-items: center; 
+  flex-direction: column;
+`;
+
 const Questionary = () => {
   const location = useLocation();
   const history = useHistory();
@@ -49,6 +57,7 @@ const Questionary = () => {
   const [questionary, setQuestionary] = useState([]);
   const [showQuestions, setShowQuestions] = useState(false);
   const [disabledButton, setDisabledButton] = useState(true);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -59,8 +68,6 @@ const Questionary = () => {
     if (dataQuestionsCourse?.success) {
       if (dataQuestionsCourse?.data?.length > 0) {
         setQuestionary(dataQuestionsCourse?.data);
-      } else {
-        //history.push({ pathname: "/certificate", state: { idCurso, token } });
       }
     }
   }, [dataQuestionsCourse]);
@@ -69,17 +76,14 @@ const Questionary = () => {
     if (dataResponseQuestionary) {
       if (dataResponseQuestionary?.success) {
         history.push({
-          pathname: "/certificate",
+          pathname: ROUTES.CERTIFICATE,
           state: {
             token,
             idCurso,
           },
         });
       } else {
-        alert(
-          dataResponseQuestionary?.data +
-            "\n No te preocupes. Puedes intertarlo una vez más"
-        );
+        setOpen(true);
       }
     }
   }, [dataResponseQuestionary]);
@@ -99,10 +103,7 @@ const Questionary = () => {
     copyResponses[index]["alternativas"] = responses_;
     setQuestionary(copyResponses);
     if (!isValidResponse) {
-      alert(
-        "Respuesta incorrecta" +
-          "\n No te preocupes. Puedes intertarlo una vez más"
-      );
+      setOpen(true);
     }
     const listBoolean = copyResponses.map((item) => {
       const newItem = item.alternativas.find(
@@ -117,11 +118,16 @@ const Questionary = () => {
 
   const checkAnswers = () => {
     fetchResponseQuestionary(token, idCurso, questionary);
-    //history.push("/certificate");
   };
 
   return (
     <>
+      <Dialog modalIsOpen={open} onClose={() => setOpen(false)} title="Test de conocimiento" labelButton="intentar otra vez">
+        <DialogContainer>
+          <Title style={{ textAlign: 'center', margin: '20px 0px 10px' }} type="lg">Respuesta incorrecta</Title>
+          <Paragraph style={{ margin: '10px 0px 20px', textAlign: 'center' }}>No te preocupes. Puedes intertarlo una vez más.</Paragraph>
+        </DialogContainer>
+      </Dialog>
       <Link
         onClick={() => {
           history.goBack();

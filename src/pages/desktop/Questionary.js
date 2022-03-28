@@ -4,6 +4,8 @@ import {
   useFetchQuestionsCourse,
   useFetchResponseQuestionary,
 } from "@hooks/useCourses";
+import { useHistory, useLocation } from "react-router-dom";
+import ROUTES from "@routes/constants";
 import Link from "@components/Link";
 import Button from "@components/Button";
 import Title from "@components/Title";
@@ -14,7 +16,7 @@ import RadioNormal from "@assets/images/radio-normal.svg";
 import RadioSelected from "@assets/images/radio-selected.svg";
 import LockedButton from "@assets/images/locked-button.svg";
 import BackgroundQuestionary from "@assets/images/background-questionary.png";
-import { useHistory, useLocation } from "react-router-dom";
+import Dialog from "@components/Dialog";
 
 const Paragraph = styled.p`
   font-weight: 400 !important;
@@ -65,6 +67,12 @@ const ContentRight = styled.div`
   margin-left: 25px;
 `;
 
+const DialogContainer = styled.div`
+  display: flex; 
+  align-items: center; 
+  flex-direction: column;
+`;
+
 const Questionary = () => {
   const location = useLocation();
   const history = useHistory();
@@ -80,7 +88,9 @@ const Questionary = () => {
   const [questionary, setQuestionary] = useState([]);
   const [showQuestions, setShowQuestions] = useState(false);
   const [disabledButton, setDisabledButton] = useState(true);
-  const [currentVideo, setCurrentVideo] = useState(0);
+  const [currentNumberQuestion, setCurrentNumberQuestion] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -91,8 +101,6 @@ const Questionary = () => {
     if (dataQuestionsCourse?.success) {
       if (dataQuestionsCourse?.data?.length > 0) {
         setQuestionary(dataQuestionsCourse?.data);
-      } else {
-        //history.push({ pathname: "/certificate", state: { idCurso, token } });
       }
     }
   }, [dataQuestionsCourse]);
@@ -101,26 +109,21 @@ const Questionary = () => {
     if (dataResponseQuestionary) {
       if (dataResponseQuestionary?.success) {
         history.push({
-          pathname: "/certificate",
+          pathname: ROUTES.CERTIFICATE,
           state: {
             token,
             idCurso,
           },
         });
       } else {
-        alert(
-          dataResponseQuestionary?.data +
-            "\n No te preocupes. Puedes intertarlo una vez más"
-        );
+        setOpen(true);
       }
     }
   }, [dataResponseQuestionary]);
 
   const onSelectedAlternative = (index, index_) => {
-    let isValidResponse = true;
     const responses_ = questionary[index].alternativas.map((element, i) => {
       if (i === index_) {
-        isValidResponse = element.esRespuestaCorrecta === "true";
         element["respuesta"] = true;
       } else {
         element["respuesta"] = false;
@@ -130,28 +133,34 @@ const Questionary = () => {
     let copyResponses = [...questionary];
     copyResponses[index]["alternativas"] = responses_;
     setQuestionary(copyResponses);
-    if (!isValidResponse) {
-      setDisabledButton(true);
-      alert(
-        "Respuesta incorrecta" +
-          "\n No te preocupes. Puedes intertarlo una vez más"
-      );
-    } else {
-      if (index === questionary.length - 1) {
-        setDisabledButton(false);
-      } else {
-        setCurrentVideo(index + 1);
-      }
-    }
   };
 
   const checkAnswers = () => {
     fetchResponseQuestionary(token, idCurso, questionary);
-    //history.push("/certificate");
   };
+
+  const onNextQuestion = () => {
+    if (currentQuestion === null || currentQuestion?.item?.esRespuestaCorrecta === 'false') {
+      setDisabledButton(true);
+      setOpen(true);
+    } else {
+      if (currentNumberQuestion === questionary.length - 1) {
+        setDisabledButton(false);
+      } else {
+        setCurrentNumberQuestion(currentNumberQuestion + 1);
+        setCurrentQuestion(null);
+      }
+    }
+  }
 
   return (
     <>
+      <Dialog modalIsOpen={open} onClose={() => setOpen(false)} title="Test de conocimiento" labelButton="intentar otra vez">
+        <DialogContainer>
+          <Title style={{ textAlign: 'center', margin: '20px 0px 10px' }} type="lg">Respuesta incorrecta</Title>
+          <Paragraph style={{ margin: '10px 0px 20px', textAlign: 'center' }}>No te preocupes. Puedes intertarlo una vez más.</Paragraph>
+        </DialogContainer>
+      </Dialog>
       <Link
         onClick={() => {
           history.goBack();
@@ -192,32 +201,39 @@ const Questionary = () => {
           )}
           {showQuestions &&
             questionary.map((item, index) =>
-              index === currentVideo ? (
+              index === currentNumberQuestion ? (
                 <Animation typeAnimation="fade">
                   <CardQuestion>
-                    <Title type="md">{`${
-                      currentVideo + 1 < 9
-                        ? `0${currentVideo + 1}`
-                        : `${currentVideo + 1}`
-                    }.- ${item?.pregunta}`}</Title>
+                    <Title type="md">{`${currentNumberQuestion + 1 < 9
+                      ? `0${currentNumberQuestion + 1}`
+                      : `${currentNumberQuestion + 1}`
+                      }.- ${item?.pregunta}`}</Title>
                     {item.alternativas &&
                       item.alternativas.map(
                         (item_, index_) =>
                           item_?.alternativa && (
                             <Alternative>
-                              {item_?.respuesta ? (
+                              {index_ === currentQuestion?.index ? (
                                 <img
                                   src={RadioSelected}
-                                  onClick={() =>
+                                  onClick={() => {
                                     onSelectedAlternative(index, index_)
-                                  }
+                                    setCurrentQuestion({
+                                      item: item_,
+                                      index: index_
+                                    });
+                                  }}
                                 />
                               ) : (
                                 <img
                                   src={RadioNormal}
-                                  onClick={() =>
+                                  onClick={() => {
                                     onSelectedAlternative(index, index_)
-                                  }
+                                    setCurrentQuestion({
+                                      item: item_,
+                                      index: index_
+                                    });
+                                  }}
                                 />
                               )}
                               <Paragraph style={{ marginLeft: "4px" }}>
@@ -235,12 +251,18 @@ const Questionary = () => {
               style={{
                 display: "flex",
                 flexDirection: "row",
-                justifyContent: "flex-end",
+                justifyContent: "space-between",
               }}
             >
-              <Title type="md">{`Pregunta: ${currentVideo + 1}/${
-                questionary.length
-              }`}</Title>
+              <Button 
+                size="small" 
+                disabled={currentQuestion === null}
+                iconRight={ArrowDoubleRight} 
+                onClick={onNextQuestion}
+                label="Siguiente pregunta"
+              />
+              <Title type="md">{`Pregunta: ${currentNumberQuestion + 1}/${questionary.length
+                }`}</Title>
             </div>
           )}
           {showQuestions && (

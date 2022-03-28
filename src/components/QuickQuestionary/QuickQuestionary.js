@@ -47,6 +47,7 @@ const QuickQuestionary = ({
   const [disabledButton, setDisabledButton] = useState(true);
   const [showSuccessResponse, setShowSuccessResponse] = useState(false);
   const [indexAlternativeSelected, setIndexAlternativeSelected] = useState(-1);
+  const [correctAlternative, setCorrectAlternative] = useState();
 
   useEffect(() => {
     if (dataResponse?.success) {
@@ -56,7 +57,10 @@ const QuickQuestionary = ({
 
   const onSelectedAlternative = (index, index_) => {
     setIndexAlternativeSelected(index_);
+    let correctAlternative_;
     const responses_ = responses[index].alternativas.map((element, i) => {
+      if(element.esRespuestaCorrecta === "true")
+        correctAlternative_ = element;
       if (i === index_) {
         element["respuesta"] = true;
       } else {
@@ -68,6 +72,7 @@ const QuickQuestionary = ({
     let copyResponses = [...responses];
     copyResponses[index]["alternativas"] = responses_;
     setResponses(copyResponses);
+    setCorrectAlternative(correctAlternative_);
     const listBoolean = responses.map((item) => {
       const newItem = item.alternativas.find(
         (item) => item?.respuesta != undefined
@@ -126,6 +131,7 @@ const QuickQuestionary = ({
                   item.alternativas.map((item_, index_) =>
                     item_?.alternativa &&
                     index_ === indexAlternativeSelected ? (
+                      <>
                       <Alternative
                         key={`a${index_}`}
                         onClick={() => onSelectedAlternative(index, index_)}
@@ -156,6 +162,14 @@ const QuickQuestionary = ({
                           </b>
                         </Paragraph>
                       </Alternative>
+                      <Paragraph
+                          style={{ marginLeft: "4px" }}
+                          color={"#28a745"}
+                        >
+                          <b>Respuesta correcta: </b>
+                          {correctAlternative?.alternativa}
+                        </Paragraph>
+                      </>
                     ) : null
                   )}
               </div>
