@@ -109,6 +109,7 @@ const Lesson = () => {
     currentTimeViewed = currentTime;
     const lessonsUpdated = updateTrackingVideoSelected();
     setLessons(lessonsUpdated);
+    updateDisabledButton(lessonsUpdated)
     fetchTracking(
       token,
       videoSelected?.item?.idCurso,

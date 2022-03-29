@@ -138,6 +138,7 @@ const Home = () => {
     currentTimeViewed = currentTime;
     const lessonsUpdated = updateTrackingVideoSelected();
     setLessons(lessonsUpdated);
+    updateDisabledButton(lessonsUpdated)
     fetchTracking(
       token,
       videoSelected?.item?.idCurso,
@@ -312,38 +313,6 @@ const Home = () => {
                   }
                   videoSelected={videoSelected}
                 />): null}
-                {/* <Video
-                  playerRef={playerRef}
-                  width="100%"
-                  height="100%"
-                  playing={playing}
-                  setPlaying={setPlaying}
-                  src={
-                    !isSelectedVideo
-                      ? dataInfoCourse?.data?.length &&
-                      `https://${dataInfoCourse?.data[0].thumbnailRutaPublica}`
-                      : `https://${videoSelected?.item?.rutaPublica}`
-                  }
-                  seek={seek}
-                  onProgress={handleOnProgress}
-                  onEnded={handleOnEnded}
-                  onEndedTimer={handleOnEndedTimer}
-                  onClickCTA={onClickCTA}
-                  onClickNextVideo={onClickNextVideo}
-                  onClickPrevVideo={onClickPrevVideo}
-                  isLoadingVideo={isLoading}
-                  showButtonsFooter={!isSelectedVideo ? false : true}
-                  delayToFinalizeVideo={!isSelectedVideo ? 0 : 5}
-                  templateInteractivity={
-                    videoSelected?.item?.templateInteractividad
-                  }
-                  ctas={
-                    videoSelected?.item?.ctas
-                      ? JSON.parse(videoSelected?.item?.ctas)
-                      : null
-                  }
-                  videoSelected={videoSelected}
-                /> */}
               </>
             ) : (
               <QuickQuestionary

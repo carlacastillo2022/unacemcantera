@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
+import { isIOS, isSafari } from "react-device-detect";
 import ReactPlayer from "react-player/lazy";
 import Button from "@components/Button";
 import styled from "styled-components";
@@ -83,7 +84,7 @@ const Video = ({
   const [widthVideo, setWidthVideo] = useState(width);
   const [heightVideo, setHeightVideo] = useState(height);
   const [isPlaying, setIsPlaying] = useState();
-  const [isMuted, setIsMuted] = useState();
+  const [isMuted, setIsMuted] = useState(false);
   const [played, setPlayed] = useState(0);
   const [endVideo, setEndVideo] = useState(false);
   const [actionBackButton, setActionBackButton] = useState({
@@ -108,7 +109,7 @@ const Video = ({
   }, [fullScreenHandle.active]);
 
   useEffect(() => {
-    playerRef.current?.seekTo(`${seek}`);
+    playerRef.current?.seekTo(`${seek - 4}`);
   }, [seek])
 
   useEffect(() => {
@@ -206,10 +207,10 @@ const Video = ({
   }
 
   const replayVideo = () => {
-    setIsPlaying(true);
-    setEndVideo(false);
     setPlayed(0);
     playerRef.current?.seekTo(0);
+    setIsPlaying(true);
+    setEndVideo(false);
   }
  
   const renderContentBottom = () => {
@@ -240,6 +241,7 @@ const Video = ({
         />
         <Button
           label="Seguir"
+          disabled={!endVideo}
           iconRight={ArrowDoubleRight}
           onClick={() => {
             setEndVideo(false);
@@ -280,6 +282,10 @@ const Video = ({
               playing={isPlaying}
               autoPlay={isPlaying}
               muted={isMuted}
+              onError={()=> {
+                if(isIOS || isSafari)
+                  setIsPlaying(!isPlaying)
+              }}
               onEnded={handleOnEnded}
               onProgress={handleOnProgress}
               onReady={() => {
