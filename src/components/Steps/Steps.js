@@ -4,6 +4,7 @@ import styled from "styled-components";
 import ProgressBar from "@components/ProgressBar";
 import ArrowUp from "@assets/images/arrow-up.svg";
 import ArrowDown from "@assets/images/arrow-down.svg";
+import CircleCheck from "@assets/images/circle-check.svg";
 import Close from "@assets/images/close.svg";
 import { useHistory } from "react-router-dom";
 
@@ -188,7 +189,7 @@ const Steps = ({
           <Description>{`Duración: ${item.duracion}/ Video`}</Description>
           {item.tieneCuestionario === 'SI' && (
             <Tag>
-              <span>Cuestionario</span>
+              <span>Cuestionario {item.completoCuestionario === 'SI' ? <img src={CircleCheck} /> : null }</span>
             </Tag>
           )}
         </ContentRight>
@@ -231,7 +232,7 @@ const Steps = ({
           <Description>{`Duración: ${item.duracion}/ Video`}</Description>
           {item.tieneCuestionario === 'SI' && (
             <Tag>
-              <span>Cuestionario</span>
+              <span>Cuestionario {item.completoCuestionario === 'SI' ? <img src={CircleCheck} /> : null }</span>
             </Tag>
           )}
         </ContentRight>
