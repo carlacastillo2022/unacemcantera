@@ -55,7 +55,7 @@ const ContainerButtons = styled.div`
   }
 
   @media (min-width: 1300px) {
-    margin-top: 2.5em;
+    margin-top: 5em;
   }
 `;
 
