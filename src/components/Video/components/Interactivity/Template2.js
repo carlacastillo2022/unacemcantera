@@ -48,7 +48,7 @@ const Template3 = ({ onClickFirst, onClickSecond, onClickThird, src }) => {
       <ContentInteractivity></ContentInteractivity>
       <ContentInteractivity>
         <div style={{ display: "flex", flex: 1 }}></div>
-        <div style={{ display: "flex", flex: 1, flexDirection: "column", marginTop: '1em' }}>
+        <div style={{ display: "flex", flex: 1, flexDirection: "column", marginTop: '4em' }}>
         <ButtonInteractiveLeft></ButtonInteractiveLeft>
           <ButtonInteractiveLeft onClick={onClickFirst}></ButtonInteractiveLeft>
           <ButtonInteractiveLeft
