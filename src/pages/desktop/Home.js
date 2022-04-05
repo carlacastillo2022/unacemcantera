@@ -364,7 +364,7 @@ const Home = () => {
               {`Duración: ${videoSelected?.item?.duracion}/ Video`}
             </Paragraph>
             {videoSelected?.item?.descripcionVideo && (
-              <DescriptionVideo dangerouslySetInnerHTML={videoSelected?.item?.descripcionVideo}>
+              <DescriptionVideo dangerouslySetInnerHTML= {{__html: videoSelected?.item?.descripcionVideo}}>
               </DescriptionVideo> 
             )}
             </>

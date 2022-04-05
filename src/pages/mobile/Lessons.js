@@ -277,7 +277,7 @@ const Lesson = () => {
             }`}
           </Title>
           {videoSelected?.item?.descripcionVideo && (
-            <DescriptionVideo dangerouslySetInnerHTML={videoSelected?.item?.descripcionVideo}>
+            <DescriptionVideo dangerouslySetInnerHTML= {{__html: videoSelected?.item?.descripcionVideo}}>
             </DescriptionVideo> 
           )}
         </>
