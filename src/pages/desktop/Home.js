@@ -352,9 +352,17 @@ const Home = () => {
             </>
           )}
           {isSelectedVideo && (
+            <>
             <Paragraph style={{ fontSize: "18px", lineHeight: "28px" }}>
               {`Duración: ${videoSelected?.item?.duracion}/ Video`}
             </Paragraph>
+            {videoSelected?.item?.descripcionVideo && (
+              <Paragraph>
+                <div dangerouslySetInnerHTML={videoSelected?.item?.descripcionVideo}>
+                </div>
+              </Paragraph>
+            )}
+            </>
           )}
           <Link
             style={{ color: "#333333", fontWeight: 700, marginTop: "20px" }}

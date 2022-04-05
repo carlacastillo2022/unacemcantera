@@ -263,11 +263,19 @@ const Lesson = () => {
         ) : null}
       </div>
       {videoSelected?.item && (
-        <Title type="lg">
-          {`Lección ${videoSelected?.index + 1 || 1}: ${
-            videoSelected?.item?.nombreVideo || ""
-          }`}
-        </Title>
+        <>
+          <Title type="lg">
+            {`Lección ${videoSelected?.index + 1 || 1}: ${
+              videoSelected?.item?.nombreVideo || ""
+            }`}
+          </Title>
+          {videoSelected?.item?.descripcionVideo && (
+            <Paragraph>
+              <div dangerouslySetInnerHTML={videoSelected?.item?.descripcionVideo}>
+              </div>
+            </Paragraph>
+          )}
+        </>
       )}
 
       <>
