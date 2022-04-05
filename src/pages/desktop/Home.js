@@ -35,6 +35,13 @@ const Paragraph = styled.p`
   font-family: ${({ theme }) => theme.fonts.mainFont};
 `;
 
+const DescriptionVideo = styled.div`
+  font-weight: 400 !important;
+  font-size: 14px;
+  line-height: 20px;
+  font-family: ${({ theme }) => theme.fonts.mainFont};
+`;
+
 const Content = styled.div`
   display: flex;
   flex-direction: row;
@@ -357,10 +364,8 @@ const Home = () => {
               {`Duración: ${videoSelected?.item?.duracion}/ Video`}
             </Paragraph>
             {videoSelected?.item?.descripcionVideo && (
-              <Paragraph>
-                <div dangerouslySetInnerHTML={videoSelected?.item?.descripcionVideo}>
-                </div>
-              </Paragraph>
+              <DescriptionVideo dangerouslySetInnerHTML={videoSelected?.item?.descripcionVideo}>
+              </DescriptionVideo> 
             )}
             </>
           )}
