@@ -47,7 +47,7 @@ const ButtonInteractiveLeft = styled.button`
     height: 22px;
   }
 
-  @media (min-width: 1300px) {
+  @media (min-width: 768px) {
     margin: 5px 0px 0px !important;
     height: 27px;
   }
