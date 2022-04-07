@@ -36,17 +36,19 @@ const ButtonInteractiveLeft = styled.button`
   height: 25px;
   transition: background-color 0.8s;
   cursor: pointer;
-  margin: 5px 0px 0px !important;
   padding: 0px !important;
   @media (min-width: 300px) {
-    height: 15px;
+    margin: 4px 0px 0px !important;
+    height: 10px;
   }
 
   @media (min-width: 600px) {
+    margin: 5px 0px 0px !important;
     height: 22px;
   }
 
   @media (min-width: 1300px) {
+    margin: 5px 0px 0px !important;
     height: 27px;
   }
 
