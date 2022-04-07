@@ -266,6 +266,7 @@ const Video = ({
           <div
             style={{
               width: widthVideo,
+              minHeight: heightVideo,
               height: heightVideo,
               background: "transparent",
               position: "relative",
