@@ -172,8 +172,8 @@ const Video = ({
   };
 
   const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
-    if(cancelTimeCounter) replayVideo();
+    if(cancelTimeCounter) replayVideo()
+    else setIsPlaying(!isPlaying);
   };
 
   const handleMute = () => {
