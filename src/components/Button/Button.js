@@ -16,15 +16,15 @@ const StyledButton = styled.button`
   align-self: flex-start;
   /* pressed state */
     ${({ color, theme, disabled }) =>
-      !disabled
-        ? css`
+    !disabled
+      ? css`
             &:active {
               background: ${theme.commons.button[color].backgroundPressed};
               background-size: 100%;
               transition: background 0s;
             }
           `
-        : css`
+      : css`
             opacity: 0.4;
           `}}
   /* color */
@@ -53,9 +53,9 @@ const StyledBody = styled.div`
   align-items: center;
   justify-content: center;
   span {
-    font-size: 18px;
+    font-size: 14px;
     line-height: 20px;
-    font-weight: 700;
+    font-weight: 500;
   }
 `;
 

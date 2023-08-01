@@ -16,24 +16,85 @@ import ArrowDoubleLeft from "@assets/images/arrow-double-left.svg";
 import ArrowDoubleLeftDark from "@assets/images/arrow-double-left-dark.svg";
 import LockedButton from "@assets/images/locked-button.svg";
 import QuickQuestionary from "@components/QuickQuestionary";
-
+import { sumDurations } from "@commons/utils";
 const Paragraph = styled.p`
   font-weight: 400 !important;
   font-size: 14px;
   line-height: 20px;
   font-family: ${({ theme }) => theme.fonts.mainFont};
 `;
-
+const Span = styled.span`
+  font-weight: 500 ;
+  font-size: 20px;
+  line-height: 20px;
+  margin:0px;
+  text-align:start ;
+  padding-top:10px;
+  display:flex ;
+  justify-content:flex-start ;
+  font-family: ${({ theme }) => theme.fonts.mainFont};
+`;
 const DescriptionVideo = styled.div`
   font-weight: 400 !important;
   font-size: 14px;
   line-height: 20px;
   font-family: ${({ theme }) => theme.fonts.mainFont};
 `;
+const CardsContainer = styled.div`
+  width: 100%;
+  height: 50px;
+  display:flex;
+  justify-content:space-between ;
 
+  margin-top:25px;
+  margin-bottom:30px;
+`;
+
+const StepContainer = styled.div`
+  overflow: scroll;
+  max-height: 200px;
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+  }
+
+  
+`;
+const Card = styled.div`
+
+background-color: white;
+width:49.5%;
+height:100%;
+display:flex ;
+justify-content:center ;
+flex-direction:column ;
+align-items:center ;
+  h1{
+  font-weight: 700 !important;
+  font-size: 12px;
+  line-height: 20px;
+  font-family: ${({ theme }) => theme.fonts.mainFont};
+
+  }
+  p{
+    font-weight: 400 !important;
+  font-size: 12px;
+  line-height: 20px;
+  margin:0px;
+  font-family: ${({ theme }) => theme.fonts.mainFont};
+  }
+  
+`;
 let currentTimeViewed = 0;
 
 const Lesson = () => {
+  const [duration, setDuration] = useState();
   const videoContainer = useRef(null);
   const playerRef = useRef(null);
 
@@ -54,10 +115,33 @@ const Lesson = () => {
   const { fetch: fetchVideoByCourse, data: dataLessons } = useFetchLessons();
   const { fetch: fetchTracking } = useFetchTracking();
   const { fetch: fetchQuestions, data: dataQuestions } = useFetchQuestions();
-
+  useEffect(() => {
+    if (dataLessons?.success) {
+      const data = dataLessons?.data;
+      let find = null;
+      if (data.length > 0) {
+        if (videoSelected?.item) {
+          find = {
+            index: videoSelected?.index + 1,
+            item: data[videoSelected?.index + 1],
+          };
+        } else {
+          find = {
+            index: 0,
+            item: data[0],
+          };
+        }
+      }
+      setLessons(data);
+      const sumDurations_ = sumDurations(dataLessons?.data);
+      setDuration(sumDurations_.formatted);
+      setVideoSelected(find);
+    }
+  }, [dataLessons]);
   useEffect(() => {
     currentTimeViewed = videoSelected?.item?.ultimoMinutoVisto || 0;
     setSeek(currentTimeViewed);
+
   }, [videoSelected]);
 
   useEffect(() => {
@@ -82,6 +166,7 @@ const Lesson = () => {
       const data = dataLessons?.data;
       updateStepsFlow(data);
     }
+    
   }, [dataLessons]);
 
   const onFinished = () => {
@@ -124,10 +209,10 @@ const Lesson = () => {
       currentTime,
       true
     );
-    
+
   };
 
-  const handleOnEndedTimer = (currentTime) => { 
+  const handleOnEndedTimer = (currentTime) => {
     currentTimeViewed = currentTime;
     fetchQuestions(
       token,
@@ -165,14 +250,14 @@ const Lesson = () => {
   };
 
   const updateTrackingVideoSelected = () => {
-    const lessonsUpdated = lessons.map((item) => {      
-      if(item?.idVideo === videoSelected.item?.idVideo) { 
+    const lessonsUpdated = lessons.map((item) => {
+      if (item?.idVideo === videoSelected.item?.idVideo) {
         return ({
           ...item,
           completoVista: (
             Math.trunc(currentTimeViewed) === Math.trunc(item.ultimoMinutoVisto || 0) ||
             Math.trunc(currentTimeViewed) === Math.trunc(playerRef.current?.getDuration() || 0)
-          ) ? "SI": "NO",
+          ) ? "SI" : "NO",
           ultimoMinutoVisto: currentTimeViewed <= parseFloat(item.ultimoMinutoVisto || 0) ? item.ultimoMinutoVisto : currentTimeViewed,
         })
       }
@@ -214,11 +299,12 @@ const Lesson = () => {
     }
   }
 
+
   const updateDisabledButton = data => {
     setDisabledButton(
       data?.find((item) => item?.completoVista !== "SI")
-      ? true
-      : false
+        ? true
+        : false
     );
   }
 
@@ -229,9 +315,36 @@ const Lesson = () => {
           history.goBack();
         }}
       >
-        <img src={ArrowDoubleLeft} />
-        <span>{nombreCurso}</span>
+        <img style={{ width: '25px' }} src={ArrowDoubleLeft} /><br />
+        <Span style={{ color: 'black', margin: '0px' }}>{nombreCurso}</Span>
       </Link>
+      <CardsContainer>
+        <Card>
+          <h1>Duracion del curso </h1>
+          <p>{duration}</p>
+        </Card>
+        <Card>
+          <h1>Total de Lecciones </h1>
+          <p>{lessons.length} lecciones</p>
+        </Card>
+      </CardsContainer>
+      <StepContainer>
+
+        <Steps
+          lessons={lessons}
+          videoSelected={videoSelected}
+          onCallbackVideoSelected={(item, index) => {
+            setQuestionary([]);
+            videoContainer.current.scrollIntoView({ behavior: "smooth" });
+            setVideoSelected({
+              item,
+              index,
+            });
+            setPlaying(true);
+          }}
+        />
+
+      </StepContainer>
 
       <div style={{ margin: "16px 0px" }}>
         {questionary?.length === 0 && videoSelected?.item ? (
@@ -253,11 +366,6 @@ const Lesson = () => {
             showButtonsFooter
             delayToFinalizeVideo={5}
             templateInteractivity={videoSelected?.item?.templateInteractividad}
-            ctas={
-              videoSelected?.item?.ctas
-                ? JSON.parse(videoSelected?.item?.ctas)
-                : null
-            }
             videoSelected={videoSelected}
           />
         ) : questionary?.length > 0 ? (
@@ -272,32 +380,17 @@ const Lesson = () => {
       {videoSelected?.item && (
         <>
           <Title type="lg">
-            {`Lección ${videoSelected?.index + 1 || 1}: ${
-              videoSelected?.item?.nombreVideo || ""
-            }`}
+            {`Lección ${videoSelected?.index + 1 || 1}: ${videoSelected?.item?.nombreVideo || ""
+              }`}
           </Title>
           {videoSelected?.item?.descripcionVideo && (
-            <DescriptionVideo dangerouslySetInnerHTML= {{__html: videoSelected?.item?.descripcionVideo}}>
-            </DescriptionVideo> 
+            <DescriptionVideo dangerouslySetInnerHTML={{ __html: videoSelected?.item?.descripcionVideo }}>
+            </DescriptionVideo>
           )}
         </>
       )}
 
-      <>
-        <Steps
-          lessons={lessons}
-          videoSelected={videoSelected}
-          onCallbackVideoSelected={(item, index) => {
-            setQuestionary([]);
-            videoContainer.current.scrollIntoView({ behavior: "smooth" });
-            setVideoSelected({
-              item,
-              index,
-            });
-            setPlaying(true);
-          }}
-        />
-      </>
+
 
       <>
         <Button
@@ -315,7 +408,7 @@ const Lesson = () => {
         style={{ color: "#333333", fontWeight: 700, marginTop: "20px" }}
         onClick={() => {
           window.parent.location.href =
-            "https://unacemcantera.com.pe/capacitaciones/";
+            "https://unacemcantera.com.pe/usuario/cursos-online";
         }}
       >
         <img src={ArrowDoubleLeftDark} />

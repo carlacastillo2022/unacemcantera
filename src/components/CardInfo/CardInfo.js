@@ -3,13 +3,16 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 const Container = styled.div`
-  background: #f3f3f3;
-  border-radius: 4px;
+  background: white;
+  border-radius: 0px;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  padding: 16px;
-  margin: 10px 0px;
+  padding: 10px;
+  margin: 0px 0px;
+  text-align:center ;
+  padding-left: 25px;
+  padding-right: 25px;
 `;
 
 const Content = styled.div`
@@ -21,14 +24,14 @@ const Content = styled.div`
 const StyledIcon = styled.div``;
 
 const StyledTitle = styled.h3`
-  font-weight: 400 !important;
+  font-weight: 700 !important;
   font-size: 14px;
-  color: #e52820;
+  color: black;
   font-family: ${({ theme }) => theme.fonts.mainFont};
   line-height: 20px;
 `;
 const StyledSubTitle = styled.h4`
-  font-weight: 700 !important;
+  font-weight: 400 !important;
   font-size: 16px;
   font-family: ${({ theme }) => theme.fonts.mainFont};
   line-height: 20px;

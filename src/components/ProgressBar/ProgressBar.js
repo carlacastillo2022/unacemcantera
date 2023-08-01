@@ -6,36 +6,41 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  padding-top: 20px;
 `;
 
 const ContainerBar = styled.div`
   background-color: #ffffff;
   height: 10px;
-  border-radius: 100px;
-  width: 75%;
+  border-radius: 0px;
+  width: 100%;
 `;
 
 const Bar = styled.div`
-  height: 10px;
+  height: 29px;
   background-color: #e52820;
-  border-radius: 100px;
+  border-radius: 0px;
   width: ${({ width }) => width}%;
+  display:flex ;
+  justify-content:end;
 `;
 
 const Percentage = styled.label`
-  font-size: 25px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 500;
   line-height: 30px;
   font-family: ${({ theme }) => theme.fonts.mainFont};
   width: 25%;
   text-align: right;
+  padding-right:7px;
 `;
 
 const Title = styled.span`
   font-family: ${({ theme }) => theme.fonts.mainFont};
-  font-size: 18px;
-  font-weight: 400;
+  font-size: 24px;
+  font-weight: 500;
   line-height: 28px;
+  padding-top: 20px;
 `;
 
 const ProgressBar = ({ percentage }) => {
@@ -44,9 +49,9 @@ const ProgressBar = ({ percentage }) => {
       <Title>Tu progreso</Title>
       <Container>
         <ContainerBar>
-          <Bar width={percentage}></Bar>
+          <Bar width={percentage}><Percentage>{percentage}%</Percentage></Bar>
         </ContainerBar>
-        <Percentage>{percentage}%</Percentage>
+
       </Container>
     </>
   );

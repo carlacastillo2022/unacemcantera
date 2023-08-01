@@ -8,16 +8,7 @@ import Button from "@components/Button";
 import styled from "styled-components";
 import Loading from "@components/Loading";
 import Controls from "./components/Controls";
-import Template1 from "./components/Interactivity/Template1";
-import Template2 from "./components/Interactivity/Template2";
-import Template3 from "./components/Interactivity/Template3";
-import Template4 from "./components/Interactivity/Template4";
-import Template5 from "./components/Interactivity/Template5";
-import Template6 from "./components/Interactivity/Template6";
-import Template7 from "./components/Interactivity/Template7";
-import Template8 from "./components/Interactivity/Template8";
-import Template9 from "./components/Interactivity/Template9";
-import Template10 from "./components/Interactivity/Template10";
+import MapperInteractivity from './components/MapperInteractivity';
 import ArrowDoubleRight from "@assets/images/arrow-double-right.svg";
 import ArrowDoubleLeftWhite from "@assets/images/arrow-double-left-white.svg";
 import ArrowReplay from "@assets/images/arrow-replay.svg";
@@ -55,7 +46,7 @@ let timeOutControlsBar = null;
 let timerForProgress = 0;
 
 const cancelSubscriptions = () => {
-  if(timeOutControlsBar)
+  if (timeOutControlsBar)
     clearTimeout(timeOutControlsBar)
 };
 
@@ -124,7 +115,7 @@ const Video = ({
     setKey(src)
     setEndVideo(false);
     setImageInteractivity(null)
-    if(actionBackButton.idNextVideo !== videoSelected?.item?.idVideo) {
+    if (actionBackButton.idNextVideo !== videoSelected?.item?.idVideo) {
       setActionBackButton({
         video: null,
         click: null,
@@ -134,9 +125,9 @@ const Video = ({
   }, [src])
 
   useEffect(() => {
-    if(endVideo) {
+    if (endVideo) {
       setCancelTimeCounter(false);
-      setTimeout(()=> {
+      setTimeout(() => {
         if (containerControlsRef.current && templateInteractivity) {
           containerControlsRef.current.style.display = "none";
           playerRef.current?.seekTo(playerRef.current?.getDuration() || 0);
@@ -144,15 +135,15 @@ const Video = ({
           containerControlsRef.current.style.display = "flex";
         }
         setIsPlaying(false);
-      },1);
+      }, 1);
     } else {
-      if (containerControlsRef.current) 
+      if (containerControlsRef.current)
         containerControlsRef.current.style.display = "flex";
     }
   }, [endVideo])
 
   const handleMouseMove = () => {
-    if(!endVideo) {
+    if (!endVideo) {
       cancelSubscriptions();
       if (controlsRef.current) controlsRef.current.style.display = "block";
       timeOutControlsBar = setTimeout(() => {
@@ -212,7 +203,7 @@ const Video = ({
     setIsPlaying(true);
     setEndVideo(false);
   }
- 
+
   const renderContentBottom = () => {
     return showButtonsFooter ? (
       <ContainerButtonsFooter>
@@ -237,10 +228,10 @@ const Video = ({
           styleIconLeft={{ height: "30px", width: "30px" }}
           onClick={() => replayVideo()}
           size="small"
-          styleButton={{ marginRight: "8px", marginLeft: "8px"}}
+          styleButton={{ marginRight: "8px", marginLeft: "8px" }}
         />
         <Button
-          label="Seguir"
+          label="Siguiente Lección"
           disabled={!endVideo}
           iconRight={ArrowDoubleRight}
           onClick={() => {
@@ -255,9 +246,21 @@ const Video = ({
     ) : null;
   };
 
+  let ctas;
+  let mapAreas;
   const currentTime = playerRef.current?.getCurrentTime();
   const duration = playerRef.current?.getDuration();
-  const ctas = videoSelected?.item?.ctas ? JSON.parse(videoSelected?.item?.ctas): null
+  const imgCover = imageInteractivity ? imageInteractivity : videoSelected?.item?.imagenCover;
+  try {
+    ctas = videoSelected?.item?.ctas ? JSON.parse(videoSelected?.item?.ctas) : null
+  }catch(e) {
+    ctas = null
+  }
+  try {
+    mapAreas = videoSelected?.item?.coordenadas ? JSON.parse(videoSelected?.item?.coordenadas) : null
+  }catch(e) {
+    mapAreas = null
+  }
 
   return (
     <div>
@@ -283,20 +286,20 @@ const Video = ({
               playing={isPlaying}
               autoPlay={isPlaying}
               muted={isMuted}
-              onError={()=> {
-                if(isIOS || isSafari)
+              onError={() => {
+                if (isIOS || isSafari)
                   setIsPlaying(!isPlaying)
               }}
               onEnded={handleOnEnded}
               onProgress={handleOnProgress}
               onReady={() => {
                 setIsLoadingBuffer(false);
-              }} 
+              }}
               onBuffer={() => setIsLoadingBuffer(true)}
               onBufferEnd={() => setIsLoadingBuffer(false)}
               type='video/mp4'
             />
-                      
+
             <Controls
               controlsRef={controlsRef}
               containerControlsRef={containerControlsRef}
@@ -313,86 +316,17 @@ const Video = ({
               contentBottom={
                 fullScreenHandle.active ? renderContentBottom() : null
               }
-            /> 
+            />
 
             {templateInteractivity &&
-              endVideo &&
-              templateInteractivity === "template1" && (
-                <Template1
-                  onClickFirst={() => handleOnClickInteractivity(videoSelected, ctas[`cta1`], playerRef?.current?.getDuration())}
-                  onClickSecond={() => handleOnClickInteractivity(videoSelected, ctas[`cta2`], playerRef?.current?.getDuration())}
-                />
-              )}
-
-            {templateInteractivity &&
-              endVideo &&
-              templateInteractivity === "template2" && (
-                <Template2
-                  src={imageInteractivity}
-                  onClickFirst={() =>
-                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
-                  }
-                  onClickSecond={() =>
-                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
-                  }
-                  onClickThird={() =>
-                    setImageInteractivity(ctas[`cta3`], playerRef?.current?.getDuration())
-                  }
-                />
-              )}
-
-            {templateInteractivity &&
-              endVideo &&
-              templateInteractivity === "template3" && (
-                <Template3
-                  onClickFirst={() => handleOnClickInteractivity(videoSelected, ctas[`cta1`], playerRef?.current?.getDuration())}
-                  onClickSecond={() => handleOnClickInteractivity(videoSelected, ctas[`cta2`], playerRef?.current?.getDuration())}
-                  onClickThird={() => handleOnClickInteractivity(videoSelected, ctas[`cta3`], playerRef?.current?.getDuration())}
-                />
-              )}
-
-            {templateInteractivity &&
-              endVideo &&
-              templateInteractivity === "template4" && (
-                <Template4
-                  src={imageInteractivity}
-                  onClickFirst={() =>
-                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
-                  }
-                  onClickSecond={() =>
-                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
-                  }
-                />
-              )}
-
-            {templateInteractivity &&
-              endVideo &&
-              templateInteractivity === "template5" && (
-                <Template5
-                  src={imageInteractivity}
-                  onClickFirst={() =>
-                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
-                  }
-                  onClickSecond={() =>
-                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
-                  }
-                  onClickThird={() =>
-                    setImageInteractivity(ctas[`cta3`], playerRef?.current?.getDuration())
-                  }
-                  onClickFourth={() =>
-                    setImageInteractivity(ctas[`cta4`], playerRef?.current?.getDuration())
-                  }
-                  onClickFifth={() =>
-                    setImageInteractivity(ctas[`cta5`], playerRef?.current?.getDuration())
-                  }
-                  onClickSixth={() =>
-                    setImageInteractivity(ctas[`cta6`], playerRef?.current?.getDuration())
-                  }
-                  onClickSeventh={() =>
-                    setImageInteractivity(ctas[`cta7`], playerRef?.current?.getDuration())
-                  }
-                />
-              )}
+              endVideo && (<MapperInteractivity mapAreas={mapAreas} src={imgCover} templateName={templateInteractivity} onClickArea={(keyCTA) => {
+                if (templateInteractivity === "template1" || templateInteractivity === "template3") {
+                  handleOnClickInteractivity(videoSelected, ctas[keyCTA], playerRef?.current?.getDuration())
+                } else {
+                  setImageInteractivity(ctas[keyCTA])
+                }
+              }} />)
+            }
 
             {showButtonsFooter && endVideo && !templateInteractivity && !cancelTimeCounter && (
               <ContainerLoading>
@@ -403,7 +337,7 @@ const Video = ({
                     alignItems: "center",
                     marginTop: "19px",
                   }}
-                  onClick={()=> {
+                  onClick={() => {
                     setCancelTimeCounter(true);
                   }}
                 >
@@ -422,114 +356,11 @@ const Video = ({
               </ContainerLoading>
             )}
 
-            {templateInteractivity &&
-              endVideo &&
-              templateInteractivity === "template6" && (
-                <Template6
-                  src={imageInteractivity}
-                  onClickFirst={() =>
-                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
-                  }
-                  onClickSecond={() =>
-                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
-                  }
-                />
-              )}
-
-            {templateInteractivity &&
-              endVideo &&
-              templateInteractivity === "template7" && (
-                <Template7
-                  src={imageInteractivity}
-                  onClickFirst={() =>
-                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
-                  }
-                  onClickSecond={() =>
-                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
-                  }
-                  onClickThird={() =>
-                    setImageInteractivity(ctas[`cta3`], playerRef?.current?.getDuration())
-                  }
-                  onClickFourth={() =>
-                    setImageInteractivity(ctas[`cta4`], playerRef?.current?.getDuration())
-                  }
-                  onClickFifth={() =>
-                    setImageInteractivity(ctas[`cta5`], playerRef?.current?.getDuration())
-                  }
-                  onClickSixth={() =>
-                    setImageInteractivity(ctas[`cta6`], playerRef?.current?.getDuration())
-                  }
-                />
-              )}
-
-            {templateInteractivity &&
-              endVideo &&
-              templateInteractivity === "template8" && (
-                <Template8
-                  src={imageInteractivity}
-                  onClickFirst={() =>
-                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
-                  }
-                  onClickSecond={() =>
-                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
-                  }
-                  onClickThird={() =>
-                    setImageInteractivity(ctas[`cta3`], playerRef?.current?.getDuration())
-                  }
-                  onClickFourth={() =>
-                    setImageInteractivity(ctas[`cta4`], playerRef?.current?.getDuration())
-                  }
-                />
-              )}
-
-            {templateInteractivity &&
-              endVideo &&
-              templateInteractivity === "template9" && (
-                <Template9
-                  src={imageInteractivity}
-                  onClickFirst={() =>
-                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
-                  }
-                  onClickSecond={() =>
-                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
-                  }
-                  onClickThird={() =>
-                    setImageInteractivity(ctas[`cta3`], playerRef?.current?.getDuration())
-                  }
-                  onClickFourth={() =>
-                    setImageInteractivity(ctas[`cta4`], playerRef?.current?.getDuration())
-                  }
-                  onClickFifth={() =>
-                    setImageInteractivity(ctas[`cta5`], playerRef?.current?.getDuration())
-                  }
-                />
-              )}
-
-            {templateInteractivity &&
-              endVideo &&
-              templateInteractivity === "template10" && (
-                <Template10
-                  src={imageInteractivity}
-                  onClickFirst={() =>
-                    setImageInteractivity(ctas[`cta1`], playerRef?.current?.getDuration())
-                  }
-                  onClickSecond={() =>
-                    setImageInteractivity(ctas[`cta2`], playerRef?.current?.getDuration())
-                  }
-                  onClickThird={() =>
-                    setImageInteractivity(ctas[`cta3`], playerRef?.current?.getDuration())
-                  }
-                  onClickFourth={() =>
-                    setImageInteractivity(ctas[`cta4`], playerRef?.current?.getDuration())
-                  }
-                />
-              )}
-
             {isLoadingVideo || isLoadingBuffer && (
-                <ContainerLoading>
-                  <Loading type="Oval" color="#FFFFFF" />
-                </ContainerLoading>
-              )}
+              <ContainerLoading>
+                <Loading type="Oval" color="#FFFFFF" />
+              </ContainerLoading>
+            )}
           </div>
         </FullScreen>
         {renderContentBottom()}

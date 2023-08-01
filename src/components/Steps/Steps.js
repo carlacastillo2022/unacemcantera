@@ -27,27 +27,35 @@ const StyledLock = styled.img`
 `;
 
 const Container = styled.div`
-  margin: 0px -16px;
+  margin: 0px ;
+  padding-top: 30px;
+  padding-left:0px;
   padding-bottom: 24px;
 `;
 
 const ContainerProgress = styled.div`
-  background: #f3f3f3;
-  margin: 0px -16px;
+  background: white;
+  margin: 0px ;
   padding: 16px;
+  padding-top:25px ;
+  padding-left:17px;
 `;
 
 const ContainerTitle = styled.div`
   display: flex;
   justify-content: space-between;
   background: #fafafa;
-  margin: 24px -16px 0px;
-  padding: 16px;
+  margin: 0px;
+  padding-top: 30px;
+  padding-left:17px;
+
   span {
-    font-weight: 700;
-    font-size: 20px;
+    font-weight: 500;
+    font-size: 24px;
     line-height: 27px;
     font-family: ${({ theme }) => theme.fonts.mainFont};
+  
+
   }
 `;
 
@@ -81,6 +89,8 @@ const Content = styled.div`
   height: 100%;
   background: ${({ background }) => background};
   cursor: pointer;
+  padding-left: 10px;
+ 
 `;
 
 const ContentLeft = styled.div`
@@ -164,7 +174,7 @@ const Steps = ({
         onClick={() => onClick(index, item)}
         background={index === videoSelected?.index ? "#f3f3f3" : "#fafafa"}
         style={{
-          padding: index === 0 ? "16px 16px 0px" : "0px 16px 0px",
+          padding: index === 0 ? "0px 16px 10px 15px" : "0px 16px 10px 15px",
         }}
       >
         <ContentLeft>
@@ -189,7 +199,7 @@ const Steps = ({
           <Description>{`Duración: ${item.duracion}/ Video`}</Description>
           {item.tieneCuestionario === 'SI' && (
             <Tag>
-              <span>Cuestionario {item.completoCuestionario === 'SI' ? <img src={CircleCheck} /> : null }</span>
+              <span>Cuestionario {item.completoCuestionario === 'SI' ? <img src={CircleCheck} /> : null}</span>
             </Tag>
           )}
         </ContentRight>
@@ -209,7 +219,7 @@ const Steps = ({
         background={index === videoSelected?.index ? "#f3f3f3" : "#fafafa"}
         onClick={() => onClick(index, item)}
         style={{
-          padding: index === 0 ? "16px 16px 0px" : "0px 16px 0px",
+          padding: index === 0 ? "16px 16px 10px 15px" : "10px 16px 10px 15px",
         }}
       >
         <ContentLeft>
@@ -218,7 +228,7 @@ const Steps = ({
             <span>{index + 1 < 10 ? `0${index + 1}` : index + 1}</span>
           </Circle>
           {index !== lessons.length - 1 && (
-            <VerticalBar height={index === 0 ?  "calc(100% - 32px)" : "calc(100% - 52px)"} isLight />
+            <VerticalBar height={index === 0 ? "calc(100% - 32px)" : "calc(100% - 52px)"} isLight />
           )}
         </ContentLeft>
         <ContentRight
@@ -232,7 +242,7 @@ const Steps = ({
           <Description>{`Duración: ${item.duracion}/ Video`}</Description>
           {item.tieneCuestionario === 'SI' && (
             <Tag>
-              <span>Cuestionario {item.completoCuestionario === 'SI' ? <img src={CircleCheck} /> : null }</span>
+              <span>Cuestionario {item.completoCuestionario === 'SI' ? <img src={CircleCheck} /> : null}</span>
             </Tag>
           )}
         </ContentRight>
@@ -250,8 +260,14 @@ const Steps = ({
   if (lessons && lessons.length > 0)
     return (
       <>
+
+        <ContainerProgress>
+          <ProgressBar
+            percentage={`${parseInt((100 * advancedLessons) / lessons.length)}`}
+          ></ProgressBar>
+        </ContainerProgress>
         <ContainerTitle>
-          <span>Lecciones</span>
+          <span>Contenidos</span>
           {!disabledClose && (
             <div
               onClick={() => {
@@ -262,11 +278,6 @@ const Steps = ({
             </div>
           )}
         </ContainerTitle>
-        <ContainerProgress>
-          <ProgressBar
-            percentage={`${parseInt((100 * advancedLessons) / lessons.length)}`}
-          ></ProgressBar>
-        </ContainerProgress>
         <Container>
           {lessons.map((item, index) => {
             isCompleted = item?.completoVista === "SI"
