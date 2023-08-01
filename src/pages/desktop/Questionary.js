@@ -176,7 +176,7 @@ const Questionary = () => {
           </div>
           {!showQuestions && (
             <>
-              <Title type="md">{nombreCurso}</Title>
+              <Title type="lg">{nombreCurso}</Title>
               <Paragraph>
                 Prueba tus conocimientos para obtener tu certificado mediante
                 este cuestionario. ¡Mucha suerte!
@@ -254,10 +254,10 @@ const Questionary = () => {
                 justifyContent: "space-between",
               }}
             >
-              <Button 
-                size="small" 
+              <Button
+                size="small"
                 disabled={currentQuestion === null}
-                iconRight={ArrowDoubleRight} 
+                iconRight={ArrowDoubleRight}
                 onClick={onNextQuestion}
                 label="Siguiente pregunta"
               />

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import { sumDurations } from "@commons/utils";
 import {
   useFetchCourse,
@@ -13,53 +14,88 @@ import ROUTES from "@routes/constants";
 import Link from "@components/Link";
 import Button from "@components/Button";
 import Title from "@components/Title";
-import CardInfo from "@components/CardInfo";
 import Steps from "@components/Steps";
 import { Video } from "@components/Video";
 import ArrowDoubleLeft from "@assets/images/arrow-double-left.svg";
 import ArrowDoubleLeftDark from "@assets/images/arrow-double-left-dark.svg";
 import LockedButton from "@assets/images/locked-button.svg";
-import Time from "@assets/images/time.svg";
-import Lessons from "@assets/images/lessons.svg";
 import QuickQuestionary from "@components/QuickQuestionary";
-
-const ContainerCards = styled.div`
-  margin-top: 22px;
-  margin-bottom: 16px;
-`;
 
 const Paragraph = styled.p`
   font-weight: 400 !important;
-  font-size: 18px;
-  line-height: 28px;
+  font-size: 20px;
+  line-height: 32px;
   font-family: ${({ theme }) => theme.fonts.mainFont};
 `;
+const Intro = styled.span`
+ font-weight: 700 !important;
+  font-size: 20px;
+  line-height: 32px;
+  font-family: ${({ theme }) => theme.fonts.mainFont};
 
+
+`;
 const DescriptionVideo = styled.div`
   font-weight: 400 !important;
   font-size: 14px;
   line-height: 20px;
   font-family: ${({ theme }) => theme.fonts.mainFont};
 `;
+const CardsContainer = styled.div`
+  width: 100%;
+  height: 70px;
+  display:flex;
+  justify-content:space-between ;
 
+  margin-top:25px;
+  margin-bottom:30px;
+`;
+const Card = styled.div`
+
+background-color: white;
+width:49.5%;
+height:100%;
+display:flex ;
+justify-content:center ;
+flex-direction:column ;
+align-items:center ;
+  h1{
+  font-weight: 700 !important;
+  font-size: 14px;
+  line-height: 20px;
+  font-family: ${({ theme }) => theme.fonts.mainFont};
+
+  }
+  p{
+    font-weight: 400 !important;
+  font-size: 14px;
+  line-height: 20px;
+  margin:0px;
+  font-family: ${({ theme }) => theme.fonts.mainFont};
+  }
+  
+`;
 const Content = styled.div`
   display: flex;
   flex-direction: row;
   margin-bottom: 30px;
+  width:100%;
+
 `;
 
 const ContentLeft = styled.div`
   width: 70%;
+  margin-right:35px;
 `;
 
 const ContentRight = styled.div`
-  width: 30%;
-  background: #fafafa;
-  border-radius: 8px;
-  margin: 0px 15px;
-  padding: 16px;
+  width: 100%;
+  background: white;
+  border-radius: 0px;
+  margin: 0px;
+  padding: 0px;
   overflow: scroll;
-  height: 100vh;
+  height: 100%;
   ::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 7px;
@@ -192,7 +228,7 @@ const Home = () => {
       pathname: ROUTES.QUESTIONARY,
       state: {
         token,
-        idCurso: dataInfoCourse?.data[0].idCurso,
+        idCurso: idCurso,
         nombreCurso: videoSelected?.item?.nombreCurso,
       },
     });
@@ -212,16 +248,16 @@ const Home = () => {
 
   const updateTrackingVideoSelected = () => {
     const lessonsUpdated = lessons.map((item) => {
-      if(isSelectedVideo) {
-        if(item?.idVideo === videoSelected.item?.idVideo) {
-            return ({
-              ...item,
-              completoVista: (
-                Math.trunc(currentTimeViewed) === Math.trunc(item.ultimoMinutoVisto || 0) ||
-                Math.trunc(currentTimeViewed) === Math.trunc(playerRef.current?.getDuration() || 0)
-              ) ? "SI": "NO",
-              ultimoMinutoVisto: currentTimeViewed <= parseFloat(item.ultimoMinutoVisto || 0) ? item.ultimoMinutoVisto : currentTimeViewed,
-            })
+      if (isSelectedVideo) {
+        if (item?.idVideo === videoSelected.item?.idVideo) {
+          return ({
+            ...item,
+            completoVista: (
+              Math.trunc(currentTimeViewed) === Math.trunc(item.ultimoMinutoVisto || 0) ||
+              Math.trunc(currentTimeViewed) === Math.trunc(playerRef.current?.getDuration() || 0)
+            ) ? "SI" : "NO",
+            ultimoMinutoVisto: currentTimeViewed <= parseFloat(item.ultimoMinutoVisto || 0) ? item.ultimoMinutoVisto : currentTimeViewed,
+          })
         }
       }
       return item;
@@ -268,8 +304,8 @@ const Home = () => {
   const updateDisabledButton = data => {
     setDisabledButton(
       data?.find((item) => item?.completoVista !== "SI")
-      ? true
-      : false
+        ? true
+        : false
     );
   }
 
@@ -283,15 +319,24 @@ const Home = () => {
     <>
       <Link
         onClick={() => {
-          window.parent.location.href =
-            "https://unacemcantera.com.pe/capacitaciones/";
+
+          window.history.back();
+
         }}
       >
         <img src={ArrowDoubleLeft} />
         <span>{dataInfoCourse?.data?.length > 0 && `${dataInfoCourse?.data[0].nombreCurso}`}</span>
       </Link>
-      <Content>
+      <Content >
+
         <ContentLeft>
+          <Title type="lg"  >
+            {!isSelectedVideo
+              ? dataInfoCourse?.data?.length &&
+              `${dataInfoCourse?.data[0].nombreCurso}`
+              : `Lección ${videoSelected?.index + 1 || 1}: ${videoSelected?.item?.nombreVideo || ""
+              }`}
+          </Title>
           <div style={{ margin: "16px 0px" }}>
             {questionary?.length === 0 ? (
               <>
@@ -319,7 +364,7 @@ const Home = () => {
                       : null
                   }
                   videoSelected={videoSelected}
-                />): null}
+                />) : null}
               </>
             ) : (
               <QuickQuestionary
@@ -330,29 +375,12 @@ const Home = () => {
               />
             )}
           </div>
-          <Title type="lg">
-            {!isSelectedVideo
-              ? dataInfoCourse?.data?.length &&
-              `${dataInfoCourse?.data[0].nombreCurso}`
-              : `Lección ${videoSelected?.index + 1 || 1}: ${videoSelected?.item?.nombreVideo || ""
-              }`}
-          </Title>
+
 
           {!isSelectedVideo && (
             <>
-              <ContainerCards>
-                <CardInfo
-                  icon={Time}
-                  title="Duración del curso"
-                  subTitle={duration}
-                />
-                <CardInfo
-                  icon={Lessons}
-                  title="Lecciones"
-                  subTitle={`${lessons.length} ${lessons.length > 1 ? "lecciones" : "leccion"
-                    }`}
-                />
-              </ContainerCards>
+              <Title type="lg"  >{!dataLessons ? "" : dataLessons.data[0].nombreCurso}</Title>
+              <Intro style={{ color: "black", fontWeight: 700, marginTop: "20px" }}>1.Introducción</Intro>
               <Paragraph>
                 {lessons.length ? lessons[0].descripcionCurso : ""}
               </Paragraph>
@@ -360,62 +388,72 @@ const Home = () => {
           )}
           {isSelectedVideo && (
             <>
-            <Paragraph style={{ fontSize: "18px", lineHeight: "28px" }}>
-              {`Duración: ${videoSelected?.item?.duracion}/ Video`}
-            </Paragraph>
-            {videoSelected?.item?.descripcionVideo && (
-              <DescriptionVideo dangerouslySetInnerHTML= {{__html: videoSelected?.item?.descripcionVideo}}>
-              </DescriptionVideo> 
-            )}
+              <Paragraph style={{ fontSize: "18px", lineHeight: "28px" }}>
+                {`Duración: ${videoSelected?.item?.duracion}/ Video`}
+              </Paragraph>
+              {videoSelected?.item?.descripcionVideo && (
+                <DescriptionVideo dangerouslySetInnerHTML={{ __html: videoSelected?.item?.descripcionVideo }}>
+                </DescriptionVideo>
+              )}
             </>
           )}
           <Link
             style={{ color: "#333333", fontWeight: 700, marginTop: "20px" }}
             onClick={() => {
-              window.parent.location.href =
-                "https://unacemcantera.com.pe/capacitaciones/";
+              window.history.back();
             }}
           >
             <img src={ArrowDoubleLeftDark} />
             <span>Ver todos los cursos</span>
           </Link>
         </ContentLeft>
-        <ContentRight>
-          <Steps
-            lessons={lessons}
-            disabledClose
-            videoSelected={videoSelected}
-            onCallbackVideoSelected={(item, index) => {
-              setQuestionary([]);
-              setIsSelectedVideo(true);
-              setVideoSelected({
-                item,
-                index,
-              });
-              setPlaying(true);
-            }}
-          />
-          <Button
-            disabled={disabledButton}
-            onClick={onClickQuestionary}
-            label="OBTENER CERTIFICADO"
-            iconLeft={LockedButton}
-          />
-          <Paragraph style={{ fontSize: "14px" }}>
-            Recuerda que debes terminar el curso en su totalidad para realizar
-            el cuestionario y obtener tu certificado.
-          </Paragraph>
-          <Link
-            style={{ color: "#333333", fontWeight: 700, marginTop: "20px" }}
-            onClick={() => {
-              window.parent.location.href =
-                "https://unacemcantera.com.pe/capacitaciones/";
-            }}
-          >
-            <img src={ArrowDoubleLeftDark} />
-            <span>Ver todos los cursos</span>
-          </Link>
-        </ContentRight>
+        <div style={{ flexDirection: 'column', margin: '0px', display: 'flex', padding: "0px", width: '30%', height: '740px' }}>
+          <CardsContainer>
+            <Card>
+              <h1>Duracion del curso </h1>
+              <p>{duration}</p>
+            </Card>
+            <Card>
+              <h1>Total de Lecciones </h1>
+              <p>{lessons.length} lecciones</p>
+            </Card>
+          </CardsContainer>
+          <ContentRight>
+            <Steps
+              lessons={lessons}
+              disabledClose
+              videoSelected={videoSelected}
+              onCallbackVideoSelected={(item, index) => {
+                setQuestionary([]);
+                setIsSelectedVideo(true);
+                setVideoSelected({
+                  item,
+                  index,
+                });
+                setPlaying(true);
+              }}
+            />
+            <Button
+              disabled={disabledButton}
+              onClick={onClickQuestionary}
+              label="OBTENER CERTIFICADO"
+              iconLeft={LockedButton}
+            />
+            <Paragraph style={{ margin: '10px', fontSize: "14px" }}>
+              Recuerda que debes terminar el curso en su totalidad para realizar
+              el cuestionario y obtener tu certificado.
+            </Paragraph>
+            <Link
+              style={{ margin: '10px', color: "#333333", fontWeight: 700, marginTop: "20px" }}
+              onClick={() => {
+                window.history.back();
+              }}
+            >
+              <img src={ArrowDoubleLeftDark} />
+              <span>Ver todos los cursos</span>
+            </Link>
+          </ContentRight>
+        </div>
       </Content>
     </>
   );

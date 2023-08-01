@@ -16,23 +16,26 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   position: relative;
+  background-color: #EBEBEB;
+  width:100% ;
+  padding-top:30px;
 `;
 
 const ContentDesktopView = styled.div`
-  padding: 28px 16px 70px;
-  background: #ffffff;
-  margin: 0 5%;
-  border-radius: 8px;
-  min-width: 960px;
-  max-width: 1169px;
-  margin-bottom: 40px;
+  background: #EBEBEB;
+  margin: 0px ;
+ 
+  margin-bottom: 0px;
+  width:96% ;
+
 `;
 
 const ContentMobileView = styled.div`
   padding: 28px 16px 70px;
-  background: #ffffff;
-  height: 100%;
-  margin-bottom: 40px;
+  height: auto;
+  margin-bottom: 0px;
+  width:96% ;
+  background: #EBEBEB;
 `;
 
 export const Home = () => {
@@ -42,7 +45,6 @@ export const Home = () => {
         <ContentMobileView>
           <HomeMobile />
         </ContentMobileView>
-        <Footer />
       </Container>
     );
   return (
@@ -50,7 +52,6 @@ export const Home = () => {
       <ContentDesktopView>
         <HomeDesktop />
       </ContentDesktopView>
-      <Footer />
     </Container>
   );
 };
@@ -62,7 +63,6 @@ export const Questionary = () => {
         <ContentMobileView>
           <QuestionaryMobile />
         </ContentMobileView>
-        <Footer style={{ position: 'fixed' }} />
       </Container>
     );
   return (
@@ -70,7 +70,6 @@ export const Questionary = () => {
       <ContentDesktopView>
         <QuestionaryDesktop />
       </ContentDesktopView>
-      <Footer style={{ position: 'fixed' }} />
     </Container>
   );
 };
@@ -90,7 +89,6 @@ export const Certificate = () => {
         <ContentMobileView>
           <CertificateMobile />
         </ContentMobileView>
-        <Footer style={{ position: 'fixed' }} />
       </Container>
     );
   return (
@@ -98,7 +96,6 @@ export const Certificate = () => {
       <ContentDesktopView>
         <CertificateDesktop />
       </ContentDesktopView>
-      <Footer style={{ position: 'fixed' }} />
     </Container>
   );
 };

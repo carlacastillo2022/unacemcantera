@@ -142,7 +142,7 @@ const Questionary = () => {
       </div>
       {!showQuestions && (
         <>
-          <Title type="md">{nombreCurso}</Title>
+          <Title type="lg">{nombreCurso}</Title>
           <Paragraph>
             Prueba tus conocimientos para obtener tu certificado mediante este
             cuestionario. ¡Mucha suerte!
@@ -157,6 +157,7 @@ const Questionary = () => {
             <Button
               onClick={() => {
                 setShowQuestions(true);
+                console.log(location);
               }}
               label="Comenzar"
               iconRight={ArrowDoubleRight}
@@ -167,9 +168,8 @@ const Questionary = () => {
       {showQuestions &&
         questionary.map((item, index) => (
           <CardQuestion key={`q${index}`}>
-            <Title type="md">{`${
-              index + 1 < 9 ? `0${index + 1}` : `${index + 1}`
-            }.- ${item?.pregunta}`}</Title>
+            <Title type="md">{`${index + 1 < 9 ? `0${index + 1}` : `${index + 1}`
+              }.- ${item?.pregunta}`}</Title>
             {item.alternativas &&
               item.alternativas.map(
                 (item_, index_) =>

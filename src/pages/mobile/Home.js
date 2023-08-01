@@ -9,7 +9,6 @@ import Link from "@components/Link";
 import Button from "@components/Button";
 import Title from "@components/Title";
 import CardInfo from "@components/CardInfo";
-import { Video } from "@components/Video";
 import ArrowDoubleLeft from "@assets/images/arrow-double-left.svg";
 import ArrowDoubleLeftDark from "@assets/images/arrow-double-left-dark.svg";
 import ArrowDoubleRight from "@assets/images/arrow-double-right.svg";
@@ -74,8 +73,7 @@ const Home = () => {
     <>
       <Link
         onClick={() => {
-          window.parent.location.href =
-            "https://unacemcantera.com.pe/capacitaciones/";
+          window.history.back();
         }}
       >
         <img src={ArrowDoubleLeft} />
@@ -96,7 +94,7 @@ const Home = () => {
           ) : null */}
         </div>
         {dataInfoCourse?.data?.length && (
-          <Title type="lg">{dataInfoCourse?.data[0].nombreCurso || ""}</Title>
+          <Title type="md">{dataInfoCourse?.data[0].nombreCurso || ""}</Title>
         )}
         <>
           <div style={{ marginTop: "18px" }}>
@@ -124,9 +122,8 @@ const Home = () => {
             <CardInfo
               icon={Lessons}
               title="Lecciones"
-              subTitle={`${lessons.length} ${
-                lessons.length > 1 ? "lecciones" : "leccion"
-              }`}
+              subTitle={`${lessons.length} ${lessons.length > 1 ? "lecciones" : "leccion"
+                }`}
             />
           </ContainerCards>
           <Paragraph>
@@ -138,8 +135,7 @@ const Home = () => {
         <Link
           style={{ color: "#333333", fontWeight: 700, marginTop: "20px" }}
           onClick={() => {
-            window.parent.location.href =
-              "https://unacemcantera.com.pe/capacitaciones/";
+            window.history.back();
           }}
         >
           <img src={ArrowDoubleLeftDark} />
